@@ -1,0 +1,18 @@
+NPM:
+npm install -g <plugin>
+
+BD: ==> Installer Mongo DB (windows / Linux / ... Mac)
+Collection "account":
+ex: db.account.insert(
+{
+   'Login' : 'log',
+   'Password' : 'PW',
+   'FirstName' : 'FN',
+   'LastName' : 'LN',
+   'Age' : 'xx',
+   'Gender' : 'M/F',
+   'Email' : 'a@a.a',
+   'Restriction' : 'R',
+   'Location' : 'LA'
+   'Favorites' : 'FV'
+});
