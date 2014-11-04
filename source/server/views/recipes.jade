@@ -1,0 +1,52 @@
+//
+   Created by Julian on 02/11/2014.
+
+doctype html
+html
+    head
+        title= title
+        link(rel='stylesheet', href='/stylesheets/recipes.css')
+    body
+        block content
+        script(src='/javascripts/jQuery.js')
+        script(src='/javascripts/global.js')
+        script(src='/javascripts/recipes_function.js')
+        h1= title
+        p Managing Recipes
+        // Wrapper
+        #wrapper
+            // RECIPEINFO
+            #recipesInfo
+                h2 Recipe Info
+                p
+                    strong Ingredients:
+                    | <span id='recipesInfoIngredients'></span>
+                    br
+                    strong Origin:
+                    | <span id='recipesInfoOrigin'></span>
+                    br
+                    strong Making Time:
+                    | <span id='recipesInfoMakingTime'></span>
+                    br
+                    strong Cooking Time:
+                    | <span id='recipesInfoCookingTime'></span>
+                    br
+                    strong Photos:
+                    | <span id='recipesInfoPhotos'></span>
+            // /RECIPEINFO
+            // RECIPE LIST
+            h2 Recipes List
+            #recipesList
+                table
+                    thead
+                        th Name
+                        th Difficulty
+                        th Mark
+                        th Delete?
+                    tbody
+            // /RECIPE LIST
+            // ADD RECIPE
+            h2 Add Recipe
+            #addRecipes
+            // /ADD RECIPE
+          // /WRAPPER

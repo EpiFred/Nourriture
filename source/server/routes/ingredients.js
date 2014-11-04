@@ -1,32 +1,44 @@
 /**
- * Created by Julian on 31/10/2014.
+ * Created by Julian on 01/11/2014.
  */
 
 var express = require('express');
 var router = express.Router();
 
-/* GET products listing. */
+/* GET ingredients listing. */
 router.get('/', function(req, res) {
-    res.render('products', { title: 'Nourriture - Products' });
+    res.render('ingredients', { title: 'Nourriture - Ingredients' });
 });
 
 /*
- * GET productslist.
+ * GET ingredientslist.
  */
-router.get('/productslist', function(req, res) {
+router.get('/ingredientslist', function(req, res) {
     var db = req.db;
-    db.collection('products').find().toArray(function (err, items) {
+    db.collection('ingredients').find().toArray(function (err, items) {
         res.json(items);
     });
 });
 
 /*
- * DELETE to deleteproducts.
+ * POST to addingredients.
  */
-router.delete('/deleteproducts/:id', function(req, res) {
+router.post('/addingredients', function(req, res) {
     var db = req.db;
-    var productsToDelete = req.params.id;
-    db.collection('products').removeById(productsToDelete, function(err, result) {
+    db.collection('ingredients').insert(req.body, function(err, result){
+        res.send(
+            (err === null) ? { msg: '' } : { msg: err }
+        );
+    });
+});
+
+/*
+ * DELETE to deleteingredients.
+ */
+router.delete('/deleteingredients/:id', function(req, res) {
+    var db = req.db;
+    var ingredientsToDelete = req.params.id;
+    db.collection('ingredients').removeById(ingredientsToDelete, function(err, result) {
         res.send((result === 1) ? { msg: '' } : { msg:'error: ' + err });
     });
 });
@@ -38,7 +50,7 @@ router.delete('/deleteproducts/:id', function(req, res) {
  */
 
 router.get('/get_by_name', function(req,res){
-    res.send('route get_by_name get');
+   res.send('route get_by_name get');
 });
 
 router.post('/create', function(req,res){
@@ -51,10 +63,6 @@ router.put('/set_by_name', function(req,res){
 
 router.delete('/delete_by_name', function(req,res){
     res.send('route delete_by_name delete');
-});
-
-router.get('get_recipes', function(req, res){
-    res.send('route get_ingredients get');
 });
 
 module.exports = router;

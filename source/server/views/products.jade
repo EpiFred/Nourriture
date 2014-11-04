@@ -1,0 +1,35 @@
+//
+   Created by Julian on 02/11/2014.
+
+doctype html
+html
+    head
+        title= title
+        link(rel='stylesheet', href='/stylesheets/products.css')
+    body
+        block content
+        script(src='/javascripts/jQuery.js')
+        script(src='/javascripts/global.js')
+        script(src='/javascripts/products_function.js')
+        h1= title
+        p Managing Products
+        // Wrapper
+        #wrapper
+            // PRODUCTS INFO
+            #productsInfo
+            // /PRODUCT INFO
+            // PRODUCT LIST
+            h2 Products List
+            #productsList
+                table
+                    thead
+                        th Name
+                        th Saeson
+                        th Delete?
+                    tbody
+            // /PRODUCT LIST
+            // ADD PRODUCT
+            h2 Add Products
+            #addProducts
+            // /ADD PRODUCT
+        // /WRAPPER

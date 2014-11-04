@@ -1,32 +1,31 @@
 /**
- * Created by Julian on 31/10/2014.
+ * Created by Julian on 02/11/2014.
  */
-
 var express = require('express');
 var router = express.Router();
 
-/* GET products listing. */
+/* GET recipes listing. */
 router.get('/', function(req, res) {
-    res.render('products', { title: 'Nourriture - Products' });
+    res.render('recipes', { title: 'Nourriture - Recipe' });
 });
 
 /*
- * GET productslist.
+ * GET recipeslist.
  */
-router.get('/productslist', function(req, res) {
+router.get('/recipeslist', function(req, res) {
     var db = req.db;
-    db.collection('products').find().toArray(function (err, items) {
+    db.collection('recipes').find().toArray(function (err, items) {
         res.json(items);
     });
 });
 
 /*
- * DELETE to deleteproducts.
+ * DELETE to deleteingredients.
  */
-router.delete('/deleteproducts/:id', function(req, res) {
+router.delete('/deleterecipes/:id', function(req, res) {
     var db = req.db;
-    var productsToDelete = req.params.id;
-    db.collection('products').removeById(productsToDelete, function(err, result) {
+    var recipesToDelete = req.params.id;
+    db.collection('recipes').removeById(recipesToDelete, function(err, result) {
         res.send((result === 1) ? { msg: '' } : { msg:'error: ' + err });
     });
 });
@@ -53,8 +52,8 @@ router.delete('/delete_by_name', function(req,res){
     res.send('route delete_by_name delete');
 });
 
-router.get('get_recipes', function(req, res){
-    res.send('route get_ingredients get');
+router.get('get_ingredients', function(req, res){
+   res.send('route get_ingredients get');
 });
 
 module.exports = router;
