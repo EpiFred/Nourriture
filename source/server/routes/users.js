@@ -17,6 +17,16 @@ router.get('/accountlist', function(req, res) {
     });
 });
 
+/*
+ * GET Simple User
+ */
+router.get('/accountid/:id', function(req, res) {
+    var db = req.db;
+    var userId = req.params.id;
+    db.collection('account').findById(userId, function(err, result) {
+        res.json(result);
+    });
+});
 
 /*
  * POST to adduser.
@@ -41,12 +51,25 @@ router.delete('/deleteuser/:id', function(req, res) {
     });
 });
 
+/*
+ *  EDIT a User
+ */
+router.put('/editaccount/:id', function(req, res){
+    var db = req.db;
+    var userToEdit = req.params.id;
+    db.collection('account').updateById(userToEdit, req.body, function(err, result){
+        res.send(
+            (err === null) ? { msg: '' } : { msg: err }
+        );
+    });
+});
+
 // ============================================================================================================================================================
 
 /*
  * END POINT
  */
-router.get('/get_info', function(req,res){
+router.get('/get_info/:id', function(req,res){
     var db = req.db;
     db.collection('account').find().toArray(function (err, items) {
         res.json(items);

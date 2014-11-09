@@ -72,6 +72,8 @@ function showUserInfo(event) {
     $('#userInfoRestriction').text(thisUserObject.Restriction);
     $('#userInfoLocation').text(thisUserObject.Location);
     $('#userInfoFavorites').text(thisUserObject.Favorites);
+    $('#userInfoVisibility').text(thisUserObject.Visibility);
+    $('#userInfoApplyFilter').text(thisUserObject.ApplyFilter);
 
 };
 
@@ -99,7 +101,9 @@ function addUser(event) {
             'Email': $('#addUser fieldset input#inputUserEmail').val(),
             'Restriction': $('#addUser fieldset input#inputUserRestriction').val(),
             'Location': $('#addUser fieldset input#inputUserLocation').val(),
-            'Favorites': $('#addUser fieldset input#inputUserFavorites').val()
+            'Favorites': $('#addUser fieldset input#inputUserFavorites').val(),
+            'Visibility': $('#addUser fieldset input#inputUserVisibility').val(),
+            'ApplyFilter': $('#addUser fieldset input#inputUserApplyFilter').val()
         }
 
         // Use AJAX to post the object to our adduser service
