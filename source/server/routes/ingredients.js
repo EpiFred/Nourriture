@@ -83,6 +83,20 @@ router.get('/varietylist/:id', function(req, res){
 });
 
 /*
+ *  ADD Variety to an ingredients
+ */
+router.put('/ingredientsAddVariety/:id', function(req, res) {
+    var db = req.db;
+    var ingredientId = new BSON.ObjectID(req.params.id);
+    var varietyId = new BSON.ObjectID(req.body.varietyId);
+    db.collection('ingredients').update({ _id: ingredientId}, {$push: {'Variety' : varietyId }}, function(err, result){
+        res.send(
+            (err === null) ? { msg: '' } : { msg: err }
+        );
+    });
+});
+
+/*
  *  Add To Favorties
  */
 router.put('/ingredientAddFavorites/:id', function(req, res) {
