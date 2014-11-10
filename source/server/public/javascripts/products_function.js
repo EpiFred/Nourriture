@@ -39,7 +39,7 @@ function populateTable() {
         $.each(data, function(){
             tableContent += '<tr>';
             tableContent += '<td><a href="#" class="linkshowproducts" rel="' + this.Name + '" title="Show Details">' + this.Name + '</a></td>';
-            tableContent += '<td>' + this.Season + '</td>';
+            tableContent += '<td>' + this.Price + '</td>';
             tableContent += '<td><a href="#" class="linkdeleteproducts" rel="' + this._id + '">delete</a></td>';
             tableContent += '</tr>';
         });
@@ -65,6 +65,12 @@ function showProductInfo(event) {
     var thisProductsObject = productsListData[arrayPosition];
 
     //Populate Info Box
-    $('#productsInfoVariety').text(thisProductsObject.Variety);
+    $('#productsInfoDescription').text(thisProductsObject.Description);
+    $('#productsInfoPrice').text(thisProductsObject.Price);
+    $('#productsInfoRecipes').text(thisProductsObject.Recipes);
+    $('#productsInfoLocations').text(thisProductsObject.Locations);
+    $('#productsInfoOrigin').text(thisProductsObject.Origin);
+    $('#productsInfoLabel').text(thisProductsObject.Label);
+    $('#productsInfoPhotos').text(thisProductsObject.Photos);
 
 };

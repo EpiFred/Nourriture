@@ -8,26 +8,70 @@ block content
               li
                 a(href='/users') Users
                 ul
-                    a(href='/users/accountlist') GET - Accounts list
+                    a(href='/users/accountlist') GET - /accountlist
                 ul
-                    a(href='/users/accountid') GET - Account by Id
+                    a(href='/users/accountid/:id') GET - /accountid/:id
                 ul
-                    a(href='/users/adduser') POST - Add User
+                    a(href='/users/adduser') POST - /adduser
                 ul
-                    a(href='/users/deleteuser/:id') DELETE - Delete User
+                    a(href='/users/deleteuser/:id') DELETE - /deleteuser/:id
                 ul
-                    a(href='/users/get_info') GET - Get info
-                ul
-                    a(href='/users/create') POST - Create User
-                ul
-                    a(href='/users/set_info') PUT - Set User
-                ul
-                    a(href='/users/delete') DELETE - Delete User
+                    a(href='/users/editaccount/:id') PUT - /editaccount/:id
               li
                 a(href='/ingredients') Ingredients
+                ul
+                    a(href='/ingredients/ingredientslist') GET - /ingredientslist
+                ul
+                    a(href='/ingredients/ingredientid/:id') GET - /ingredientid/:id
+                ul
+                    a(href='/ingredients/addingredients') POST - /addingredients
+                ul
+                    a(href='/ingredients/deleteingredients/:id') DELETE - /deleteingredients/:id
+                ul
+                    a(href='/ingredients/editingredients/:id') PUT - /editingredients/:id
+                ul
+                    a(href='/ingredients/varietylist/:id') GET - /varietylist/:id
+                ul
+                    a(href='/ingredients/ingredientsAddVariety/:id') PUT - /ingredientsAddVariety/:id
+                ul
+                    a(href='/ingredients/ingredientAddFavorites/:id') PUT - /ingredientAddFavorites/:id
               li
                 a(href='/recipes') Recipes
+                ul
+                    a(href='/recipes/recipeslist') GET - /recipeslist
+                ul
+                    a(href='/recipes/recipeid/:id') GET - /recipeid/:id
+                ul
+                    a(href='/recipes/addrecipes') POST - /addrecipes
+                ul
+                    a(href='/recipes/deleterecipes/:id') DELETE - /deleterecipes/:id
+                ul
+                    a(href='/recipes/editrecipes/:id') PUT - /editrecipes/:id
+                ul
+                    a(href='/recipes/raterecipes/:id') PUT - /raterecipes/:id
+                ul
+                    a(href='/recipes/ingredientslist/:id') GET - /ingredientslist/:id
+                ul
+                    a(href='/recipes/recipesAddIngredients/:id') PUT - /recipesAddIngredients/:id
+                ul
+                    a(href='/recipes/recipesAddFavorites/:id') PUT - /recipesAddFavorites/:id
+                ul
+                    a(href='/recipes/recipesComment/:id') PUT - /recipesComment/:id ** TO DO **
               li
                 a(href='/products') Products
+                ul
+                  a(href='/products/productslist') GET - /productslist
+                ul
+                  a(href='/products//productid/:id') GET - /productid/:id
+                ul
+                  a(href='/products/addproducts') POST - /addproducts
+                ul
+                  a(href='/products/deleteproducts/:id') DELETE - /deleteproducts/:id
+                ul
+                  a(href='/products/editproducts/:id') PUT - /editproducts/:id
+                ul
+                  a(href='/products//recipeslist/:id') GET - /recipeslist/:id
+                ul
+                  a(href='/products//productAddRecipe/:id') PUT - /productAddRecipe/:id
               li
                 a(href='/variety') Variety

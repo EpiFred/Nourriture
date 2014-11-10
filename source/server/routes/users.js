@@ -65,27 +65,4 @@ router.put('/editaccount/:id', function(req, res){
 });
 
 // ============================================================================================================================================================
-
-/*
- * END POINT
- */
-router.get('/get_info/:id', function(req,res){
-    var db = req.db;
-    db.collection('account').find().toArray(function (err, items) {
-        res.json(items);
-    });
-});
-
-router.post('/create', function(req,res){
-    res.send('route create post');
-});
-
-router.put('/set_info', function(req,res){
-    res.send('route set_info put');
-});
-
-router.delete('/delete', function(req,res){
-    res.send('route delete delete');
-});
-
 module.exports = router;

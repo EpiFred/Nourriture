@@ -71,6 +71,9 @@ function showRecipeInfo(event) {
     $('#recipesInfoMakingTime').text(thisRecipesObject.MakingTime);
     $('#recipesInfoCookingTime').text(thisRecipesObject.CookingTime);
     $('#recipesInfoPhotos').text(thisRecipesObject.Photos);
+    $('#recipesInfoComment').text(thisRecipesObject.Comment);
+    $('#recipesInfoDescription').text(thisRecipesObject.Description);
+    $('#recipesInfoHowToDo').text(thisRecipesObject.HowToDo);
 
 };
 

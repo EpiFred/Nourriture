@@ -68,6 +68,7 @@ function showIngredientInfo(event) {
 
     //Populate Info Box
     $('#ingredientsInfoVariety').text(thisIngredientsObject.Variety);
+    $('#ingredientsInfoApproved').text(thisIngredientsObject.Approved);
 
 };
 

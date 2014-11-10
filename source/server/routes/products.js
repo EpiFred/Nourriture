@@ -96,29 +96,4 @@ router.put('/productAddRecipe/:id', function(req, res) {
     });
 });
 // ================================================================================================================================================================================
-
-/*
- * END POINT
- */
-
-router.get('/get_by_name', function(req,res){
-    res.send('route get_by_name get');
-});
-
-router.post('/create', function(req,res){
-    res.send('route create post');
-});
-
-router.put('/set_by_name', function(req,res){
-    res.send('route set_by_name put');
-});
-
-router.delete('/delete_by_name', function(req,res){
-    res.send('route delete_by_name delete');
-});
-
-router.get('get_recipes', function(req, res){
-    res.send('route get_ingredients get');
-});
-
 module.exports = router;
