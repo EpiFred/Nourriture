@@ -1,5 +1,6 @@
 #!/bin/sh
 
-#TEST SSH
-
-ssh 54.193.57.157
+cd nourriture_prod
+git pull
+#TODO : RUN SERVER PRODUCTION VERSION
+exit 0
