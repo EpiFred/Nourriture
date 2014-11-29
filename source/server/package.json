@@ -2,9 +2,9 @@
   "name": "Nourriture",
   "version": "0.0.1",
   "private": true,
+  "main": "app",
   "scripts": {
-    "start": "node ./bin/www",
-    "test": "./node_modules/.bin/mocha test/test.js"
+    "test": "./node_modules/.bin/mocha test"
   },
   "dependencies": {
     "express": "~4.0.0",
@@ -13,7 +13,6 @@
     "cookie-parser": "~1.0.1",
     "body-parser": "~1.0.0",
     "jade": "*",
-    "mongodb": "*",
     "mongoskin": "*"
   },
   "devDependencies": {

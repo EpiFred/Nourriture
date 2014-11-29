@@ -5,18 +5,12 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-/*
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/Nourriture');
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function callback () {
-    // yay!
-});
-*/
+// Configuration
+var config = require("./config")();
+
 // Database
-var mongo = require('mongoskin');
-var db = mongo.db("mongodb://localhost:27017/Nourriture", {native_parser:true});
+var mongoskin = require('mongoskin');
+var db = mongoskin.db("mongodb://localhost:27017/Nourriture", {native_parser:true});
 
 // Route directory files
 var routes = require('./routes/index');
@@ -27,6 +21,9 @@ var products = require('./routes/products');
 var variety = require('./routes/variety');
 
 var app = express();
+
+// Express environment
+app.set('env', config.mode);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
