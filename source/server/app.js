@@ -4,9 +4,10 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var config = require("./config");
 
 // Configuration
-var config = require("./config")();
+var currentConfig = config.getCurrent() || config.load();
 
 // Database
 var mongoskin = require('mongoskin');
@@ -23,7 +24,7 @@ var variety = require('./routes/variety');
 var app = express();
 
 // Express environment
-app.set('env', config.mode);
+app.set('env', currentConfig.mode);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -31,7 +32,10 @@ app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
-app.use(logger('dev'));
+if (currentConfig == config.development)
+    app.use(logger('dev'));
+else
+    app.use(logger());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -64,7 +68,7 @@ app.use(function(req, res, next) {
 
 // development error handler
 // will print stacktrace
-if (app.get('env') === 'development') {
+if (currentConfig == config.development) {
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
         res.render('error', {
@@ -83,6 +87,5 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
-
 
 module.exports = app;

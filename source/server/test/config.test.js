@@ -3,15 +3,16 @@
  */
 
 var assert = require("assert");
+var config = require("../config");
 
 describe("Configuration module", function(){
     it("should load the development configuration", function(){
-        var config = require("../config")("development");
-        assert.equal(config.mode, config.development, "The configuration mode isn't equal to development");
+        var devConfig = config.load('development');
+        assert.equal(devConfig, config.development, "The configuration mode isn't equal to development");
     });
 
     it("should load the production configuration", function(){
-        var config = require("../config")("production");
-        assert.equal(config.mode, config.production, "The configuration mode isn't equal to production");
+        var prodConfig = config.load('production');
+        assert.equal(prodConfig, config.production, "The configuration mode isn't equal to production");
     });
 });
