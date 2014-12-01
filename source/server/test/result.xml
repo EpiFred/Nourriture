@@ -1,4 +1,0 @@
-<testsuite name="Mocha Tests" tests="2" failures="0" errors="0" skipped="0" timestamp="Mon, 01 Dec 2014 13:33:07 GMT" time="0.004">
-<testcase classname="Configuration module" name="should load the development configuration" time="0.001"/>
-<testcase classname="Configuration module" name="should load the production configuration" time="0"/>
-</testsuite>

@@ -1,4 +1,5 @@
 us.stackdump
 .idea
 node_modules
-test/result.xml
+*/test/result.xml
+npm-debug.log
