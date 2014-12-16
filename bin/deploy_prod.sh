@@ -1,12 +1,12 @@
 #!/bin/sh
 
 ssh ubuntu@localhost <<EOF
-export LC_ALL="en_US.UTF-8"
 cd nourriture_prod
 git pull
-sudo ./bin/node_install.sh
-sudo ./bin/mongodb_install.sh
-sudo ./bin/mongodb_launch.sh
+cd bin
+sudo ./node_install.sh
+sudo ./mongodb_install.sh
+sudo ./mongodb_launch.sh
 exit
 EOF
 
