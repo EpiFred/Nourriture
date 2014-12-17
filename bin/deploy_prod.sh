@@ -3,7 +3,10 @@
 ssh ubuntu@localhost <<EOF
 cd nourriture_prod
 git pull
-sudo ./bin/node_install.sh
+cd bin
+sudo ./node_install.sh
+sudo ./mongodb_install.sh
+sudo ./mongodb_launch.sh
 exit
 EOF
 

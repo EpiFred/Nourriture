@@ -4,7 +4,7 @@
   "private": true,
   "main": "app",
   "scripts": {
-    "test": "./node_modules/.bin/mocha test"
+    "test": "./node_modules/.bin/mocha test > test/result.xml"
   },
   "dependencies": {
     "express": "~4.0.0",
