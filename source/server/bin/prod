@@ -3,6 +3,7 @@
 // Loading configuration
 var config = require("../config");
 var currentConfig = config.load('production');
+currentConfig.port = process.argv[3] || process.env.PORT || currentConfig.port;
 
 var app = require("../app");
 
