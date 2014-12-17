@@ -1,6 +1,6 @@
 #!/bin/sh
 
-## Mongodb launch script.
+## Script to launch Mongodb on linux.
 
 CURRENT_BIN_PATH=`pwd`
 DB_PATH=$CURRENT_BIN_PATH/../source/server/db
