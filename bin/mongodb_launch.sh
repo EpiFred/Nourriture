@@ -18,3 +18,5 @@ if ! [ -e $DB_PATH/mongodb.pid ]; then
 	rm -f $DB_PATH/mongodb.pid
     fi
 fi
+
+exit 0

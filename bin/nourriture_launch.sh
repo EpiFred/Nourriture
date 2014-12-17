@@ -2,15 +2,17 @@
 
 ## Script to launch Nourriture Node server with on linux using forever.
 
+cd ../source/server
+
 if [ "$1" = "dev" ] || [ "$1" = "development" ]; then
     UID=nourriture_dev
+    npm install
 else
     UID=nourriture_prod
+    npm install --production
 fi
 
 PIDFILE=$UID.pid
-
-cd ../source/server
 
 if ! [ -e "$HOME/.forever/pids/$PIDFILE" ]; then
     npm install forever
