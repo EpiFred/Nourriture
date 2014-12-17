@@ -23,7 +23,6 @@ exports.production = config.production;
 
 exports.load = function(mode){
     current = config[mode || process.argv[2] || process.env.NODE_ENV] || config.production;
-    current.port = process.argv[3] || process.env.PORT || current.port;
     return (current);
 };
 
