@@ -71,6 +71,13 @@ function CheckMail(mail)
 
 /*
  *  Route for login
+ *  Code:
+ *      0 : Authentication OK
+ *      10X1 : Field missing
+ *      10X2 : Field empty
+ *      10X3 : Field not conform to the protocol
+ *      10X4 : Bad Authentication
+ *      9001 : DB Error
  *  TO DO Manage Token --> Handle other page the Token
  */
 router.post('/login', function(req, res)
@@ -84,19 +91,19 @@ router.post('/login', function(req, res)
         var pw = formInfos.password;
 
         if ((checkError = CheckLogin(login)).code != 0)
-            return (res.send(checkError.info));
+            return (res.send(checkError));
         if ((checkError = CheckPassword(pw)).code != 0)
-            return (res.send(checkError.info));
+            return (res.send(checkError));
 
         var db = req.db;
         db.collection("account").findOne({Login: login, Password: pw}, function(error, account_res)
         {
             if (error)
-                return (res.send("DB Error"));
+                return (res.send({code: 9001, info: "DB Error"}));
             if (account_res === null)
-                res.send("Bad Login or Bad Password");
+                res.send({code: 1004, info: "Bad Login or Bad Password"});
             else
-                res.send("Authentication OK");
+                res.send({code: 0, info:"Authentication OK"});
         });
     });
 });
