@@ -18,7 +18,7 @@ PIDFILE=$UID.pid
 
 if ! [ -e "$HOME/.forever/pids/$PIDFILE" ]; then
     npm install forever
-    ./node_modules/forever/bin/forever start -p ./ -l forever.log -o output.log -e error.log --uid "$UID" bin/$BINARY
+    ./node_modules/forever/bin/forever start -p ./ -l forever.log -o output.log -e error.log --uid "$UID" --append bin/$BINARY
 else
     ./node_modules/forever/bin/forever restart "$UID"
 fi
