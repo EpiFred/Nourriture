@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Nourriture - Recipe</title>
+	<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="http://localhost/TestAngJs/partials/style.css">
+</head>
+<body>
+	<div class="row bg-grey">
+		<div class="container">
+			<a href="#/search">Back to articles</a>
+			<div class="col-xs-5 col-sm-4 col-md-3">
+				<img id="profil" src="assets/burger.jpg" alt="..." class="img-responsive">
+			</div>
+			<div class="col-xs-7 col-sm-8 col-md-9">
+				<h1>{{title}}</h1>
+				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean mollis bibendum vehicula. Quisque non semper metus.</p>
+			</div>
+		</div>
+	</div>
+	<div class="container" ng-repeat="product in products">
+		<div class="col-xs-5 col-sm-4 col-md-3 thumbnail">
+			<h5>Making Time : {{product.type}}</h5>
+			<h5>Cooking Time : {{product.cookT}}</h5>
+			<h5><strong>Ingredients</strong></h5>
+			<p>
+				<span>Ingrédients (pour 5 personnes) :</span><br>
+				- 800 g de patates douces<br>- 1 briquette de crème fraîche (20 cl) <br>- huile d'olive<br>- sel, poivre ou piment de cayenne<br>- facultatif : zestes d'orange ou de citron pour parfumer<br>
+				<br>
+			</p>
+		</div>
+		<div class="col-xs-7 col-sm-8 col-md-9">
+			<h5>Preparation de la recette</h5>
+			<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean mollis bibendum vehicula. Quisque non semper metus.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean mollis bibendum vehicula. Quisque non semper metus.</p>
+		</div>
+	</div>
+	<div class="row bg-white">
+		<div class="container"><h3>Comments</h3></div>
+		<div class="container" ng-repeat="comment in comments">
+			<div class="col-xs-4 col-sm-3 col-md-2">
+				<img id="profil" src="assets/franky.png" alt="..." class="img-responsive">
+			</div>
+			<div class="col-xs-8 col-sm-9 col-md-10">
+				<h3>{{comment.username}}</h3>
+				<p>{{comment.content}}</p>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<legend>Add your comment</legend>
+		<form ng-submit="addComment()">
+			<input type="text" placeholder="username" ng-model="newComment.username" class="form-control"/><br>
+			<input type="text" placeholder="city" ng-model="newComment.city" class="form-control"/><br>
+			<textarea ng-model="newComment.content"></textarea>
+			<input type="submit" value="envoyer">
+		</form>
+	</div>
+</body>
+</html>
