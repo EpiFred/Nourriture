@@ -47,5 +47,18 @@ db.user.insert({
     'email' : 'b@b.b',
     'avatar' : 'url to do',
     'Restriction' : [],
-    'Favorites' : []
+    'Favorites' : [],
+    'auth_token' : ""
+});
+
+db.user.insert({
+    'pseudo' : 'Lilou',
+    'password' : 'multipass',
+    'firstname' : '5',
+    'lastname' : 'Element',
+    'email' : 'lilou@corben.dalas',
+    'avatar' : 'url to do',
+    'Restriction' : [],
+    'Favorites' : [],
+    'auth_token' : ""
 });

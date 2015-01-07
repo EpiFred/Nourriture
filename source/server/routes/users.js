@@ -1,13 +1,11 @@
 var express = require('express');
 var router = express.Router();
-var mongo = require('mongodb');
-var BSON = mongo.BSONPure;
 var formidable = require('formidable');
 var UserControl = require('../public/javascripts/users_control.js');
-
+var CodeError = require('../public/javascripts/error_code.js');
+var Auth = require('../public/javascripts/auth_control.js');
 // ====================================================================================================================================
-var CodeDB = 1;
-var CodeUserIdNotFound = 204;
+
 // ====================================================================================================================================
 var CheckBson = /^[0-9a-fA-F]{24}$/;
 
@@ -20,21 +18,29 @@ var CheckBson = /^[0-9a-fA-F]{24}$/;
  *      10X3 : Field not conform to the protocol
  *      CodeLogin : Bad Authentication
  *      CodeDB : DB Error
- *  TO DO Manage Token --> Handle other page the Token
  */
-router.get('/:id', function(req, res)
+router.get('/:t/:id', function(req, res)
 {
-    var idUser = req.params.id;
-    if (!(CheckBson.test(idUser)))
-        res.status(404).send({request: "error", code: CodeUserIdNotFound, info: "User could not be found."});
-    var db = req.db;
-    db.collection('user').findById(idUser, function (error, account_res) {
-        if (error)
-            res.status(0).send({code: CodeDB, info: "DB Error"});
-        if (account_res === null)
-            res.status(404).send({request: "error", code: CodeUserIdNotFound, info: "User could not be found."});
-        else
-            res.status(201).send({request: "success", user: account_res});
+    Auth.CheckAuth(req, res, function()
+    {
+        var idUser = req.params.id;
+        if (!(CheckBson.test(idUser)))
+            res.status(404).send({request: "error", code: CodeError.CodeUserIdNotFound,info: "User could not be found."});
+        var db = req.db;
+        db.collection('user').findById(idUser, function (error, account_res) {
+            if (error)
+                res.status(CodeError.StatusDB).send({code: CodeError.CodeCodeDB, info: "DB Error"});
+            if (account_res === null)
+                res.status(404).send({ request: "error", code: CodeError.CodeUserIdNotFound, info: "User could not be found." });
+            else
+                if (account_res.auth_token === req.params.t)
+                    res.status(201).send({request: "success", user: account_res});
+                else {
+                    delete account_res.auth_token;
+                    delete account_res.password;
+                    res.status(201).send({request: "success", user: account_res});
+                }
+        });
     });
 });
 
@@ -76,12 +82,12 @@ router.put('/', function(req, res)
 ///*
 // * GET userlist.
 // */
-//router.get('/accountlist', function(req, res) {
-//    var db = req.db;
-//    db.collection('account').find().toArray(function (err, items) {
-//        res.json(items);
-//    });
-//});
+router.get('/accountlist', function(req, res) {
+    var db = req.db;
+    db.collection('user').find().toArray(function (err, items) {
+        res.json(items);
+    });
+});
 //
 ///*
 // * GET Simple User
