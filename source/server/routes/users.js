@@ -83,7 +83,8 @@ router.post('/', function(req, res)
                             res.status(200).send({request: "error", code: CodeError.CodeUserAlreadyExist, info: "Email address '" + email + "' is already used by another user"});
                     }
                     else{
-                        user_collection.insert(formInfos, function(err_insert, insert_res) {
+                        var new_user = { pseudo: login, password: pw, firstname: fn, lastname: ln, email: email};
+                        user_collection.insert(new_user, function(err_insert, insert_res) {
                             if (err_insert)
                                 res.status(CodeError.StatusDB).send({code: CodeError.CodeCodeDB, info: "DB Error"});
                             else if (insert_res == null)
@@ -113,15 +114,99 @@ router.post('/', function(req, res)
  *  Route for login
  *  Code:
  *      0 : Authentication OK
- *      201 : Field missing
- *      202 : Field invalid
- *      10X3 : Field not conform to the protocol
- *      CodeLogin : Bad Authentication
- *      CodeDB : DB Error
- *  TO DO Manage Token --> Handle other page the Token
  */
-router.put('/', function(req, res)
+router.put('/:t', function(req, res)
 {
+    var form = new formidable.IncomingForm();
+    var checkError;
+
+    form.parse(req, function (error, formInfos, files) {
+        var pw = formInfos.password;
+        var npw = formInfos.new_password;
+        var fn = formInfos.firstname;
+        var ln = formInfos.lastname;
+        var email = formInfos.email;
+        var favorites = formInfos.favorites;
+        var avatar = formInfos.avatar;
+
+        if ((checkError = UserControl.CheckPassword(pw)).code == CodeError.CodeFieldInvalid)
+            return (res.status(400).send(checkError));
+        if ((checkError = UserControl.CheckPassword(npw)).code == CodeError.CodeFieldInvalid)
+            return (res.status(400).send(checkError));
+        if ((checkError = UserControl.CheckMail(email)).code == CodeError.CodeFieldInvalid)
+            return (res.status(400).send(checkError));
+        if ((checkError = UserControl.CheckName(fn, "firstname")).code == CodeError.CodeFieldInvalid)
+            return (res.status(400).send(checkError));
+        if ((checkError = UserControl.CheckName(ln, "lastname")).code == CodeError.CodeFieldInvalid)
+            return (res.status(400).send(checkError));
+        if ((pw == undefined && npw != undefined) || (pw != undefined && npw == undefined))
+            return (res.status(400).send({request: "error", code: CodeError.CodeEditPassword, info: "Please set the 'password' and the 'new_password' or none of them"}));
+
+        Auth.CheckAuth(req, res, function()
+        {
+            var db = req.db;
+            var token = req.params.t;
+            db.collection('user', function(err_collection, user_collection) {
+                if (err_collection)
+                    res.status(CodeError.StatusDB).send({code: CodeError.CodeDB, info: "DB Error"});
+                else {
+                    user_collection.find({auth_token: token} , function (error, account_res) {
+                        if (error)
+                            res.status(CodeError.StatusDB).send({code: CodeError.CodeDB, info: "DB Error"});
+                        if (account_res === null)
+                            res.status(404).send({ request: "error", code: CodeError.CodeUserIdNotFound, info: "User could not be found." });
+                        else
+                        {
+                            user_collection.findOne({auth_token: token, password: pw}, function (err_find, find_res) {
+                                if (err_find)
+                                    res.status(CodeError.StatusDB).send({code: CodeError.CodeDB, info: "DB Error"});
+                                else if (find_res === null)
+                                    res.status(200).send({request: "error", code: CodeError.CodeBadPasswordEdit, info: "The password is incorrect."});
+                                else {
+                                    var update_user = {};
+                                    if (email != undefined)
+                                    {
+                                        user_collection.findOne({auth_token: token, email : email}, function(err_findemail, email_res){
+                                           if(err_findemail)
+                                               res.status(CodeError.StatusDB).send({code: CodeError.CodeDB, info: "DB Error"});
+                                           else if (email_res != null)
+                                               res.status(200).send({request: "error", code: CodeError.CodeEmailAlreadyUsed, info: "Email address '" + email + "' is already used by another user"});
+                                        });
+                                        update_user.email = email;
+                                    }
+                                    if (npw != undefined)
+                                        update_user.password = npw;
+                                    if (fn != undefined)
+                                        update_user.firstname = fn;
+                                    if (ln != undefined)
+                                        update_user.lastname = ln;
+                                    if (favorites != undefined)
+                                        update_user.favorites = favorites;
+                                    if (avatar != undefined)
+                                        update_user.avatar = avatar;
+                                    user_collection.update({ _id : find_res._id }, { $set : update_user }, function(err_update, user_updated) {
+                                       if (err_update)
+                                           res.status(CodeError.StatusDB).send({code: CodeError.CodeDB, info: "DB Error"});
+                                       else if (user_updated == null)
+                                           res.status(CodeError.StatusDB).send({code: CodeError.CodeDB, info: "DB Error"});
+                                       else
+                                       {
+                                           var new_user_updated = {};
+                                           for (var _old in find_res)
+                                               new_user_updated[_old] = find_res[_old];
+                                           for (var _new in update_user)
+                                               new_user_updated[_new] = update_user[_new];
+                                           res.status(201).send({request: "success", user: new_user_updated});
+                                       }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    });
 });
 // =========================================================================== OLD =============================================================================
 ///* GET users listing. */
@@ -132,12 +217,12 @@ router.put('/', function(req, res)
 ///*
 // * GET userlist.
 // */
-router.get('/accountlist', function(req, res) {
-    var db = req.db;
-    db.collection('user').find().toArray(function (err, items) {
-        res.json(items);
-    });
-});
+//router.get('/accountlist', function(req, res) {
+//    var db = req.db;
+//    db.collection('user').find().toArray(function (err, items) {
+//        res.json(items);
+//    });
+//});
 //
 ///*
 // * GET Simple User

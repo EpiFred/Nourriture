@@ -40,7 +40,7 @@ router.post('/', function(req, res) {
             else {
                 user_collection.findOne({pseudo: login, password: pw}, function (err_find, find_res) {
                     if (err_find)
-                        res.status(CodeError.StatusDB).send({code: CodeError.CodeCodeDB, info: "DB Error"});
+                        res.status(CodeError.StatusDB).send({code: CodeError.CodeDB, info: "DB Error"});
                     else if (find_res === null)
                         res.status(200).send({request: "error", code: CodeError.CodeBadLogin, info: "Invalid credentials."});
                     else {
