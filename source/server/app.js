@@ -16,10 +16,8 @@ var db = mongoskin.db("mongodb://localhost:27017/Nourriture", {native_parser:tru
 // Route directory files
 var routes = require('./routes/index');
 var users = require('./routes/users');
-var ingredients = require('./routes/ingredients');
 var recipes = require('./routes/recipes');
-var products = require('./routes/products');
-var variety = require('./routes/variety');
+var login = require('./routes/login');
 
 var app = express();
 
@@ -52,10 +50,8 @@ app.use(function(req,res,next){
 // Route
 app.use('/', routes);
 app.use('/users', users);
-app.use('/ingredients', ingredients);
 app.use('/recipes', recipes);
-app.use('/products', products);
-app.use('/variety', variety);
+app.use('/login', login);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
