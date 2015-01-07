@@ -25,7 +25,7 @@ router.post('/', function(req, res) {
     var checkError;
 
     form.parse(req, function (error, formInfos, files) {
-        var login = formInfos.login;
+        var login = formInfos.pseudo;
         var pw = formInfos.password;
 
         if ((checkError = UserControl.CheckLogin(login)).code != 0)
