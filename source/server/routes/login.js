@@ -34,7 +34,7 @@ router.post('/', function(req, res) {
             return (res.status(400).send(checkError));
 
         var db = req.db;
-        db.collection("account").findOne({Login: login, Password: pw}, function (error, account_res) {
+        db.collection("user").findOne({pseudo: login, password: pw}, function (error, account_res) {
             if (error)
                 return (res.status(0).send({code: CodeDB, info: "DB Error"}));
             if (account_res === null)

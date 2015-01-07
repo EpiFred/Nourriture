@@ -1,12 +1,15 @@
 var express = require('express');
 var router = express.Router();
+var mongo = require('mongodb');
+var BSON = mongo.BSONPure;
 var formidable = require('formidable');
 var UserControl = require('../public/javascripts/users_control.js');
 
 // ====================================================================================================================================
 var CodeDB = 1;
-var CodeLogin = 203;
+var CodeUserIdNotFound = 204;
 // ====================================================================================================================================
+var CheckBson = /^[0-9a-fA-F]{24}$/;
 
 /*
  *  Route for login
@@ -21,7 +24,18 @@ var CodeLogin = 203;
  */
 router.get('/:id', function(req, res)
 {
-
+    var idUser = req.params.id;
+    if (!(CheckBson.test(idUser)))
+        res.status(404).send({request: "error", code: CodeUserIdNotFound, info: "User could not be found."});
+    var db = req.db;
+    db.collection('user').findById(idUser, function (error, account_res) {
+        if (error)
+            res.status(0).send({code: CodeDB, info: "DB Error"});
+        if (account_res === null)
+            res.status(404).send({request: "error", code: CodeUserIdNotFound, info: "User could not be found."});
+        else
+            res.status(201).send({request: "success", user: account_res});
+    });
 });
 
 /*
