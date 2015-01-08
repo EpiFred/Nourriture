@@ -57,6 +57,7 @@ router.post('/', function(req, res)
         var fn = formInfos.firstname;
         var ln = formInfos.lastname;
         var email = formInfos.email;
+        // @TODO Manage avatar
 
         if ((checkError = UserControl.CheckLogin(login)).code != 0)
             return (res.status(400).send(checkError));
@@ -128,17 +129,18 @@ router.put('/:t', function(req, res)
         var ln = formInfos.lastname;
         var email = formInfos.email;
         var favorites = formInfos.favorites;
+        // @TODO Manage avatar
         var avatar = formInfos.avatar;
 
-        if ((checkError = UserControl.CheckPassword(pw)).code == CodeError.CodeFieldInvalid)
+        if ((checkError = UserControl.CheckPassword(pw)).code == CodeError.CodeUserFieldInvalid)
             return (res.status(400).send(checkError));
-        if ((checkError = UserControl.CheckPassword(npw)).code == CodeError.CodeFieldInvalid)
+        if ((checkError = UserControl.CheckPassword(npw)).code == CodeError.CodeUserFieldInvalid)
             return (res.status(400).send(checkError));
-        if ((checkError = UserControl.CheckMail(email)).code == CodeError.CodeFieldInvalid)
+        if ((checkError = UserControl.CheckMail(email)).code == CodeError.CodeUserFieldInvalid)
             return (res.status(400).send(checkError));
-        if ((checkError = UserControl.CheckName(fn, "firstname")).code == CodeError.CodeFieldInvalid)
+        if ((checkError = UserControl.CheckName(fn, "firstname")).code == CodeError.CodeUserFieldInvalid)
             return (res.status(400).send(checkError));
-        if ((checkError = UserControl.CheckName(ln, "lastname")).code == CodeError.CodeFieldInvalid)
+        if ((checkError = UserControl.CheckName(ln, "lastname")).code == CodeError.CodeUserFieldInvalid)
             return (res.status(400).send(checkError));
         if ((pw == undefined && npw != undefined) || (pw != undefined && npw == undefined))
             return (res.status(400).send({request: "error", code: CodeError.CodeEditPassword, info: "Please set the 'password' and the 'new_password' or none of them"}));
@@ -215,6 +217,7 @@ router.put('/:t', function(req, res)
  *  Code:
  *      0 : Authentication OK
  */
+// @TODO Manage delete avatar
 router.delete('/:t', function(req, res) {
     Auth.CheckAuth(req, res, function()
     {
@@ -255,12 +258,12 @@ router.delete('/:t', function(req, res) {
 ///*
 // * GET userlist.
 // */
-//router.get('/accountlist', function(req, res) {
-//    var db = req.db;
-//    db.collection('user').find().toArray(function (err, items) {
-//        res.json(items);
-//    });
-//});
+router.get('/accountlist', function(req, res) {
+    var db = req.db;
+    db.collection('user').find().toArray(function (err, items) {
+        res.json(items);
+    });
+});
 //
 ///*
 // * GET Simple User
