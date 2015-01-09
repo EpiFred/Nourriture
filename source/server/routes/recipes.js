@@ -10,9 +10,9 @@ var CodeError = require('../public/javascripts/error_code.js');
 var Auth = require('../public/javascripts/auth_control.js');
 var RecipeControl =  require('../public/javascripts/recipe_control.js');
 // ====================================================================================================================================
+var CheckBson = /^[0-9a-fA-F]{24}$/;
 
 // ====================================================================================================================================
-var CheckBson = /^[0-9a-fA-F]{24}$/;
 
 /*
  * Get a Recipe
@@ -109,10 +109,11 @@ router.put('/:t/:id', function (req, res) {
             var ct = formInfos.cooking_time;
             var instruction = formInfos.instruction;
             var foods = formInfos.foods;
-            if (/^[\],:{}\s]*$/.test(foods.replace(/\\["\\\/bfnrtu]/g, '@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').replace(/(?:^|:|,)(?:\s*\[)+/g, '')))
-                foods = JSON.parse(formInfos.foods);
-            else
-                return (res.status(400).send({request: "error", code: CodeError.CodeRecipeFieldInvalid, message: "The field 'foods' is invalid. Not the format of a JSON"}));
+            if (foods != undefined)
+                if (/^[\],:{}\s]*$/.test(foods.replace(/\\["\\\/bfnrtu]/g, '@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').replace(/(?:^|:|,)(?:\s*\[)+/g, '')))
+                    foods = JSON.parse(formInfos.foods);
+                else
+                    return (res.status(400).send({request: "error", code: CodeError.CodeRecipeFieldInvalid, message: "The field 'foods' is invalid. Not the format of a JSON"}));
 
             if ((checkError = RecipeControl.CheckFieldCreate(name, "name")).code == CodeError.CodeRecipeFieldInvalid)
                 return (res.status(400).send(checkError));
@@ -205,7 +206,7 @@ router.delete('/:t/:id', function (req, res) {
                             else if (res_del != 1)
                                 res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
                             else
-                                res.status(200).send("deleted");
+                                res.status(201).send("deleted");
                         });
                     }
                 });

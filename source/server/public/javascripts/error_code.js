@@ -28,4 +28,9 @@ exports.CodeRecipeFoodsListInvalid = 306;
 exports.CodeRecipeFoodsNameDoesNotMatch = 307;
 exports.CodeRecipeEditNotFound = 308;
 exports.CodeRecipeRemoveNotFound = 309;
+// FOOD
+exports.CodeFoodFieldMissing = 401;
+exports.CodeFoodFieldInvalid = 402;
+exports.CodeFoodGetNotFound = 403;
+exports.CodeFoodEditNotFound = 404;
 
