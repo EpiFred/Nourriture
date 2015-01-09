@@ -227,14 +227,14 @@ router.delete('/:t', function(req, res) {
             if (err_collection)
                 res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
             else {
-                user_collection.find({ auth_token : token}, function (error, account_res) {
+                user_collection.findOne({ auth_token : token}, function (error, account_res) {
                     if (error)
                         res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
                     if (account_res === null)
                         res.status(404).send({ request: "error", code: CodeError.CodeUserIdNotFound, info: "User could not be found." });
                     else
                     {
-                        user_collection.removeById(account_res._id, function(err_del, res_del){
+                        user_collection.remove({ _id : account_res._id }, function(err_del, res_del){
                             if (err_del)
                                res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
                             else if (res_del != 1)
@@ -245,8 +245,7 @@ router.delete('/:t', function(req, res) {
                     }
                 });
             }
-
-        })
+        });
     });
 });
 // =========================================================================== OLD =============================================================================
@@ -258,7 +257,7 @@ router.delete('/:t', function(req, res) {
 ///*
 // * GET userlist.
 // */
-router.get('/accountlist', function(req, res) {
+router.get('/list', function(req, res) {
     var db = req.db;
     db.collection('user').find().toArray(function (err, items) {
         res.json(items);

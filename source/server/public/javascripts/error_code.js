@@ -26,4 +26,6 @@ exports.CodeRecipeCreateNoFood = 304;
 exports.CodeRecipeFoodDoesNotExist = 305;
 exports.CodeRecipeFoodsListInvalid = 306;
 exports.CodeRecipeFoodsNameDoesNotMatch = 307;
+exports.CodeRecipeEditNotFound = 308;
+exports.CodeRecipeRemoveNotFound = 309;
 
