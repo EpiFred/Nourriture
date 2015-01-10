@@ -160,12 +160,13 @@ router.put('/:t/:id', function (req, res) {
                             if (picture != undefined)
                             {
                                 var new_picture_url = FoodControl.GetNewPictureName(picture.name, food_found._id).url;
+                                if (typeof food_found.picture == "string")
+                                    fs.unlink(food_found.picture);
                                 fs.rename(picture.path, new_picture_url, function (err_rename)
                                 {
                                     if (err_rename)
                                         return (res.status(CodeError.StatusPermissionFile).send({request: "error", code: CodeError.CodePermissionFile, message: "Can't save the file"}));
                                 });
-                                fs.unlink(food_found.picture);
                                 updated_food.picture = new_picture_url;
                             }
                             if (nutritional_values != undefined)

@@ -9,6 +9,8 @@ var protocol_login = /^[a-zA-Z0-9]+$/;
 var protocol_mail = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
 var protocol_password = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
 // ===============================================================================================================================================
+var base_url = "./";
+var image_dir_url = base_url + "public/images/";
 
 // ===============================================================================================================================================
 /*
@@ -21,9 +23,9 @@ var protocol_password = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
 function CheckLogin(login)
 {
     if (login === undefined)
-        return ({request: "error", code: CodeError.CodeUserFieldMissing, message: "The field 'login' is mandatory and has not been specified."});
+        return ({request: "error", code: CodeError.CodeUserFieldMissing, message: "The field 'pseudo' is mandatory and has not been specified."});
     if (login == "")
-        return ({request: "error", code: CodeError.CodeUserFieldInvalid, message: "The field 'login' is invalid"});
+        return ({request: "error", code: CodeError.CodeUserFieldInvalid, message: "The field 'pseudo' is invalid"});
     //if (protocol_login.test(login))
     //    return ({code: 1003, message: "Field 'login' not conform to the login protocol"});
     return ({code: 0, message: "Login is OK"});
@@ -80,8 +82,31 @@ function CheckName(name, type)
         return ({request: "error", code: CodeError.CodeUserFieldInvalid, message: "The field '" + type + "' is invalid"});
     return ({code: 0, message:  type + " is OK"});
 }
+
+
+function CheckPicture(picture)
+{
+    if (picture === undefined)
+        return ({request: "error", code: CodeError.CodeFoodFieldMissing, message: "The field 'avatar' is mandatory and has not been specified."});
+    if (picture.path == "")
+        return ({request: "error", code: CodeError.CodeNoSuchFile, message: "No such file '"+ picture.path +"'."});
+    if (picture.type.indexOf("image") != 0)
+        return ({request: "error", code: CodeError.CodeNotAnImage, message: "The file uploaded must be an image."});
+    return ({code: 0, message: "Everything is OK"});
+}
+
+function GetNewPictureName(pictureName, id)
+{
+    var tmp;
+    var ext = ((tmp = (pictureName).lastIndexOf(".")) != -1) ? (pictureName).substr(tmp) : ".tmp";
+    var new_picture_url = image_dir_url  + id + ext;
+    return ({url: new_picture_url});
+}
+
 // ===============================================================================================================================================
 exports.CheckLogin = CheckLogin;
 exports.CheckPassword = CheckPassword;
 exports.CheckMail = CheckMail;
 exports.CheckName = CheckName;
+exports.CheckPicture = CheckPicture;
+exports.GetNewPictureName = GetNewPictureName;

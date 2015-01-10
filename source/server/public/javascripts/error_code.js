@@ -22,6 +22,7 @@ exports.CodeSyntaxEmail = 206;
 exports.CodeBadPasswordEdit = 207;
 exports.CodeEmailAlreadyUsed = 208;
 exports.CodeEditPassword = 209;
+exports.CodeUserEditNothing = 310;
 // RECIPES
 exports.CodeRecipeFieldMissing = 301;
 exports.CodeRecipeFieldInvalid = 302;

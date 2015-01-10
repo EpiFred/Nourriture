@@ -167,6 +167,7 @@ router.put('/:t/:id', function (req, res) {
             checkError = RecipeControl.CheckPicture(picture);
             if (!(checkError.code == 0 || checkError.code == undefined))
                 return (res.status(400).send(checkError));
+            // @TODO change edit systeme of recipes
             RecipeControl.CheckIngredientsList(foods, req, res, function()
             {
                 var db = req.db;
@@ -199,12 +200,13 @@ router.put('/:t/:id', function (req, res) {
                           if (picture != undefined)
                           {
                               var new_picture_url = RecipeControl.GetNewPictureName(picture.name, recipe_found._id).url;
+                              if (typeof recipe_found.picture == "string")
+                                  fs.unlink(recipe_found.picture);
                               fs.rename(picture.path, new_picture_url, function (err_rename)
                               {
                                   if (err_rename)
                                       return (res.status(CodeError.StatusPermissionFile).send({request: "error", code: CodeError.CodePermissionFile, message: "Can't save the file"}));
                               });
-                              fs.unlink(recipe_found.picture);
                               update_recipe.picture = new_picture_url;
                           }
                           recipes_collection.update({ _id : recipe_found._id }, { $set : update_recipe }, function(err_update, recipe_updated) {
