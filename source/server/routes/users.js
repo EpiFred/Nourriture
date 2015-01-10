@@ -44,7 +44,7 @@ router.get('/:t/:id', function(req, res)
 });
 
 /*
- *  Route to login
+ *  Create an User
  *  Code:
  *      0 : Authentication OK
  */
@@ -125,7 +125,7 @@ router.post('/', function(req, res)
 });
 
 /*
- *  Route to edit user
+ *  Edit an User
  *  Code:
  *      0 : Authentication OK
  */
@@ -136,6 +136,8 @@ router.put('/:t', function(req, res)
 
     form.parse(req, function (error, formInfos, files)
     {
+        if (Object.keys(formInfos).length == 0 && Object.keys(files).length == 0)
+            return (res.status(400).send({request: "error", code: CodeError.CodeRecipeEditNothing, message: "Nothing to update."}));
         var pw = formInfos.password;
         var npw = formInfos.new_password;
         var fn = formInfos.firstname;

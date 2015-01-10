@@ -5,7 +5,10 @@
 var CodeError = require('./error_code.js');
 var mongo = require('mongodb');
 var BSON = mongo.BSONPure;
-
+// ===============================================================================================================================================
+var base_url = "./";
+var image_dir_url = base_url + "public/images/";
+// ===============================================================================================================================================
 
 function CheckFieldCreate(field, type)
 {
@@ -43,7 +46,7 @@ function CheckIngredientsList(ingredientList, req, res, next)
     var err;
     if (ingredientList === undefined)
         return (res.status(400).send({request: "error", code: CodeError.CodeRecipeFieldMissing, message: "The field 'foods' is mandatory and has not been specified."}));
-    else if (ingredientList.length == 0)
+    else if (Object.keys(ingredientList).length == 0)
         return (res.status(400).send({request: "error", code: CodeError.CodeRecipeCreateNoFood, message: "The field 'foods' can't be empty."}));
     if ((err = CheckIngredientListIntegrity(ingredientList)).request != "success")
         return (res.status(400).send(err));
@@ -74,7 +77,27 @@ function CheckIngredientsList(ingredientList, req, res, next)
     });
 }
 
+function CheckPicture(picture)
+{
+    if (picture === undefined)
+        return ({request: "error", code: CodeError.CodeFoodFieldMissing, message: "The field 'picture' is mandatory and has not been specified."});
+    if (picture.path == "")
+        return ({request: "error", code: CodeError.CodeNoSuchFile, message: "No such file '"+ picture.path +"'."});
+    if (picture.type.indexOf("image") != 0)
+        return ({request: "error", code: CodeError.CodeNotAnImage, message: "The file uploaded must be an image."});
+    return ({code: 0, message: "Everything is OK"});
+}
+
+function GetNewPictureName(pictureName, id)
+{
+    var tmp;
+    var ext = ((tmp = (pictureName).lastIndexOf(".")) != -1) ? (pictureName).substr(tmp) : ".tmp";
+    var new_picture_url = image_dir_url  + id + ext;
+    return ({url: new_picture_url});
+}
 
 // ===============================================================================================================================================
 exports.CheckFieldCreate = CheckFieldCreate;
 exports.CheckIngredientsList = CheckIngredientsList;
+exports.CheckPicture = CheckPicture;
+exports.GetNewPictureName = GetNewPictureName;

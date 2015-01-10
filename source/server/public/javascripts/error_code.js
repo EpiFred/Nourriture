@@ -4,9 +4,13 @@
 
 // UNDETERMINED
 exports.CodeDB = 1;
+exports.StatusPermissionFile = 1;
+exports.CodePermissionFile = 1;
 // GENERAL
 exports.CodeUnauthorized = 100;
 exports.CodeExpiredToken = 101;
+exports.CodeNoSuchFile = 102;
+exports.CodeNotAnImage = 103;
 exports.StatusDB = 500;
 // USER
 exports.CodeUserFieldMissing = 201;
@@ -28,6 +32,7 @@ exports.CodeRecipeFoodsListInvalid = 306;
 exports.CodeRecipeFoodsNameDoesNotMatch = 307;
 exports.CodeRecipeEditNotFound = 308;
 exports.CodeRecipeRemoveNotFound = 309;
+exports.CodeRecipeEditNothing = 310;
 // FOOD
 exports.CodeFoodFieldMissing = 401;
 exports.CodeFoodFieldInvalid = 402;

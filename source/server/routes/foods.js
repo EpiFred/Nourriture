@@ -3,6 +3,7 @@ var router = express.Router();
 var formidable = require('formidable');
 var mongo = require("mongodb");
 var BSON = mongo.BSONPure;
+var fs = require('fs');
 var CodeError = require('../public/javascripts/error_code.js');
 var Auth = require('../public/javascripts/auth_control.js');
 var FoodControl =  require('../public/javascripts/food_control.js');
@@ -45,8 +46,7 @@ router.post('/:t', function (req, res) {
         form.parse(req, function (error, formInfos, files) {
             var checkError;
             var name = formInfos.name;
-            // @TODO Manage picture
-            var picture = formInfos.picture;
+            var picture = files.picture;
             var nutritional_values = formInfos.nutritional_values;
 
             if (/^[\],:{}\s]*$/.test(nutritional_values.replace(/\\["\\\/bfnrtu]/g, '@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').replace(/(?:^|:|,)(?:\s*\[)+/g, '')))
@@ -56,18 +56,51 @@ router.post('/:t', function (req, res) {
 
             if ((checkError = FoodControl.CheckFieldCreate(name, "name")).code != 0)
                 return (res.status(400).send(checkError));
+            if ((checkError = FoodControl.CheckPicture(picture)).code != 0)
+                return (res.status(400).send(checkError));
 
             var db = req.db;
-            var new_food = {name: name, picture: picture, nutritional_values: nutritional_values};
-            db.collection("food").insert(new_food, function(err_insert, insert_res)
-            {
-                if (err_insert)
+            db.collection("food", function(err_collection, food_collection){
+                if (err_collection)
                     res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
-                else if (insert_res == null)
+                else if (food_collection == null)
                     res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
                 else
-                    res.status(201).send({request: "success", recipe: insert_res[0]});
-            });
+                {
+                    var new_food = {name: name, nutritional_values: nutritional_values};
+                    food_collection.insert(new_food, function(err_insert, insert_res)
+                    {
+                        if (err_insert)
+                            res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                        else if (insert_res == null)
+                            res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                        else
+                        {
+                            var new_picture_url = FoodControl.GetNewPictureName(picture.name, insert_res[0]._id).url;
+                            fs.rename(picture.path, new_picture_url, function (err_rename)
+                            {
+                                if (err_rename)
+                                    res.status(CodeError.StatusPermissionFile).send({request: "error", code: CodeError.CodePermissionFile, message: "Can't save the file"});
+                                else
+                                {
+                                    food_collection.update({_id : insert_res[0]._id} , {$set : {picture : new_picture_url}}, function (err_update, update_done)
+                                    {
+                                        if (err_update)
+                                            res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                                        else if (update_done != 1)
+                                            res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                                        else
+                                        {
+                                            insert_res[0].picture = new_picture_url;
+                                            res.status(201).send({request: "success", recipe: insert_res[0]});
+                                        }
+                                    })
+                                }
+                            });
+                        }
+                    });
+                }
+            })
         });
     });
 });
@@ -82,11 +115,12 @@ router.put('/:t/:id', function (req, res) {
         var form = new formidable.IncomingForm();
 
         form.parse(req, function (error, formInfos, files) {
+            if (Object.keys(formInfos).length == 0 && Object.keys(files).length == 0)
+                return (res.status(400).send({request: "error", code: CodeError.CodeRecipeEditNothing, message: "Nothing to update."}));
             var checkError;
             var idFood = req.params.id;
             var name = formInfos.name;
-            // @TODO Manage picture
-            var picture = formInfos.picture;
+            var picture = files.picture;
             var nutritional_values = formInfos.nutritional_values;
 
             if (nutritional_values != undefined && nutritional_values != "")
@@ -98,6 +132,9 @@ router.put('/:t/:id', function (req, res) {
             if (!(CheckBson.test(idFood)))
                 res.status(404).send({request: "error", code: CodeError.CodeFoodGetNotFound, info: "Food could not be found."});
             if ((checkError = FoodControl.CheckFieldCreate(name, "name")).code == CodeError.CodeFoodFieldInvalid)
+                return (res.status(400).send(checkError));
+            checkError = FoodControl.CheckPicture(picture);
+            if (!(checkError.code == 0 || checkError.code == undefined))
                 return (res.status(400).send(checkError));
 
             var db = req.db;
@@ -121,7 +158,16 @@ router.put('/:t/:id', function (req, res) {
                             if (name != undefined)
                                 updated_food.name = name;
                             if (picture != undefined)
-                                updated_food.picture = picture;
+                            {
+                                var new_picture_url = FoodControl.GetNewPictureName(picture.name, food_found._id).url;
+                                fs.rename(picture.path, new_picture_url, function (err_rename)
+                                {
+                                    if (err_rename)
+                                        return (res.status(CodeError.StatusPermissionFile).send({request: "error", code: CodeError.CodePermissionFile, message: "Can't save the file"}));
+                                });
+                                fs.unlink(food_found.picture);
+                                updated_food.picture = new_picture_url;
+                            }
                             if (nutritional_values != undefined)
                             {
                                 // @TODO Check if the nv is a correct json
@@ -184,7 +230,11 @@ router.delete('/:t/:id', function (req, res) {
                           else if (res_del != 1)
                               res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
                           else
+                          {
+                              if (typeof food_found.picture == "string")
+                                  fs.unlink(food_found.picture);
                               res.status(201).send("deleted");
+                          }
                       });
                   }
                });
