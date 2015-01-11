@@ -15,8 +15,8 @@
     "jade": "*",
     "mongodb": "*",
     "mongoskin": "*",
-    "formidable" : "1.0.16",
-    "MD5" : "*"
+    "formidable": "1.0.16",
+    "MD5": "*"
   },
   "devDependencies": {
     "debug": "~0.7.4",

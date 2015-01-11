@@ -22,15 +22,10 @@ var login = require('./routes/login');
 
 var app = express();
 
-// Express environment
+// Express environment and configuration
 app.set('env', currentConfig.mode);
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
-// uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
+
 if (currentConfig == config.development)
     app.use(logger('dev'));
 else
@@ -63,27 +58,19 @@ app.use(function(req, res, next) {
 });
 
 // error handlers
-
-// development error handler
-// will print stacktrace
 if (currentConfig == config.development) {
+    // print stack trace
     app.use(function(err, req, res, next) {
-        res.status(err.status || 500);
-        res.render('error', {
-            message: err.message,
-            error: err
-        });
+        res.status(err.status || 500)
+            .send({"request": "error", "code": "100", "message": err.message});
     });
 }
-
-// production error handler
-// no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: {}
+else{
+    // print stack trace
+    app.use(function(err, req, res, next) {
+        res.status(err.status || 500)
+            .send({"request": "error", "code": "100", "message": {}});
     });
-});
+}
 
 module.exports = app;
