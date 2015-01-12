@@ -10,6 +10,14 @@ var Auth = require('../lib/auth_control.js');
 var CheckBson = /^[0-9a-fA-F]{24}$/;
 
 // ====================================================================================================================================
+// ====================================================================================================================================
+router.get('/list', function(req, res) {
+    var db = req.db;
+    db.collection('user').find().toArray(function (err, items) {
+        res.json(items);
+    });
+});
+// ====================================================================================================================================
 /*
  *  Endpoint to get an user info
  *  Code:
@@ -72,7 +80,8 @@ router.post('/', function(req, res)
             return (res.status(400).send(checkError));
         if ((checkError = UserControl.CheckName(ln, "lastname")).code != 0)
             return (res.status(400).send(checkError));
-        if ((checkError = UserControl.CheckPicture(avatar)).code != 0)
+        checkError = UserControl.CheckPicture(avatar);
+        if (!(checkError.code == 0 || checkError.code == CodeError.CodeFoodFieldMissing))
             return (res.status(400).send(checkError));
 
         var db = req.db;
@@ -104,26 +113,29 @@ router.post('/', function(req, res)
                                 res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
                             else
                             {
-                                var new_picture_url = UserControl.GetNewPictureName(avatar.name, insert_res[0]._id).url;
-                                fs.rename(avatar.path, new_picture_url, function (err_rename)
+                                var micro_update_user = {};
+                                if (avatar != undefined)
                                 {
-                                    if (err_rename)
-                                        res.status(CodeError.StatusPermissionFile).send({request: "error", code: CodeError.CodePermissionFile, message: "Can't save the file"});
-                                    else
+                                    var new_picture_url = UserControl.GetNewPictureName(avatar.name, insert_res[0]._id).url;
+                                    fs.rename(avatar.path, new_picture_url, function (err_rename)
                                     {
-                                        var date = new Date;
-                                        var token = md5(Math.floor(date.getTime()));
+                                        if (err_rename)
+                                            return (res.status(CodeError.StatusPermissionFile).send({request: "error", code: CodeError.CodePermissionFile, message: "Can't save the file"}));
+                                    });
+                                    micro_update_user.avatar = new_picture_url;
+                                }
+                                var date = new Date;
+                                var token = md5(Math.floor(date.getTime()));
+                                micro_update_user.auth_token = token;
 
-                                        user_collection.update({_id: insert_res._id}, {$set: {"auth_token": token, "avatar" : new_picture_url}}, function (err_update, field_updated)
-                                        {
-                                            if (err_update)
-                                                res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
-                                            else if (field_updated === null)
-                                                res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
-                                            else
-                                                res.status(201).send({request: "success", token: token, user: insert_res[0]});
-                                        });
-                                    }
+                                user_collection.update({_id: insert_res[0]._id}, {$set: micro_update_user}, function (err_update, field_updated)
+                                {
+                                    if (err_update)
+                                        res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error" + err_update});
+                                    else if (field_updated === null)
+                                        res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                                    else
+                                        res.status(201).send({request: "success", token: token, user: insert_res[0]});
                                 });
                             }
                         });
@@ -167,7 +179,7 @@ router.put('/', function(req, res)
         if ((checkError = UserControl.CheckName(ln, "lastname")).code == CodeError.CodeUserFieldInvalid)
             return (res.status(400).send(checkError));
         checkError = UserControl.CheckPicture(avatar);
-        if (!(checkError.code == 0 || checkError.code == undefined))
+        if (!(checkError.code == 0 || checkError.code == CodeError.CodeFoodFieldMissing))
             return (res.status(400).send(checkError));
 
         if ((pw == undefined && npw != undefined) || (pw != undefined && npw == undefined))

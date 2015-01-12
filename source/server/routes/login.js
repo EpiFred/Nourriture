@@ -51,7 +51,7 @@ router.post('/', function(req, res) {
                         if (find_res.auth_token)
                             delete find_res.auth_token;
 
-                        user_collection.update( {_id : find_res._id}, { $set: {"auth_token":token}} , function(err_update, field_updated) {
+                        user_collection.update( {_id : find_res._id}, { $set: {auth_token:token}} , function(err_update, field_updated) {
                             if (err_update)
                                 res.status(CodeError.StatusDB).send({code: CodeError.CodeDB, info: "DB Error"});
                             else if (field_updated === null)
