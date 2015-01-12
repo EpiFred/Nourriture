@@ -4,9 +4,9 @@ var formidable = require('formidable');
 var mongo = require("mongodb");
 var BSON = mongo.BSONPure;
 var fs = require('fs');
-var CodeError = require('../public/javascripts/error_code.js');
-var Auth = require('../public/javascripts/auth_control.js');
-var FoodControl =  require('../public/javascripts/food_control.js');
+var CodeError = require('../lib/error_code.js');
+var Auth = require('../lib/auth_control.js');
+var FoodControl =  require('../lib/food_control.js');
 // ===============================================================================================================================================
 var CheckBson = /^[0-9a-fA-F]{24}$/;
 
@@ -16,7 +16,7 @@ var CheckBson = /^[0-9a-fA-F]{24}$/;
  * Code:
  *      0 : All Clear
  */
-router.get('/:t/:id', function (req, res) {
+router.get('/:id', function (req, res) {
     Auth.CheckAuth(req, res, function() {
         var idFood = req.params.id;
 
@@ -39,7 +39,7 @@ router.get('/:t/:id', function (req, res) {
  * Code:
  *      0 : All Clear
  */
-router.post('/:t', function (req, res) {
+router.post('/', function (req, res) {
     Auth.CheckAuth(req, res, function() {
         var form = new formidable.IncomingForm();
 
@@ -110,7 +110,7 @@ router.post('/:t', function (req, res) {
  * Code:
  *      0 : All Clear
  */
-router.put('/:t/:id', function (req, res) {
+router.put('/:id', function (req, res) {
     Auth.CheckAuth(req, res, function() {
         var form = new formidable.IncomingForm();
 
@@ -190,7 +190,7 @@ router.put('/:t/:id', function (req, res) {
                                 else if (food_updated != 1)
                                     res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
                                 else
-                                    res.status(201).send({request:"success", food: updated_food});
+                                    res.status(200).send({request:"success", food: updated_food});
                             });
                         }
                     });
@@ -205,7 +205,7 @@ router.put('/:t/:id', function (req, res) {
  * Code:
  *      0 : All Clear
  */
-router.delete('/:t/:id', function (req, res) {
+router.delete('/:id', function (req, res) {
     Auth.CheckAuth(req, res, function() {
         var db = req.db;
         db.collection("food", function(err_collection, food_collection)
@@ -234,7 +234,7 @@ router.delete('/:t/:id', function (req, res) {
                           {
                               if (typeof food_found.picture == "string")
                                   fs.unlink(food_found.picture);
-                              res.status(201).send("deleted");
+                              res.status(200).send({request: "success", message: "deleted"});
                           }
                       });
                   }

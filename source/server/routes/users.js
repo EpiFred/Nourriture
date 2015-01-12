@@ -3,9 +3,9 @@ var router = express.Router();
 var formidable = require('formidable');
 var md5 = require('MD5');
 var fs = require('fs');
-var UserControl = require('../public/javascripts/users_control.js');
-var CodeError = require('../public/javascripts/error_code.js');
-var Auth = require('../public/javascripts/auth_control.js');
+var UserControl = require('../lib/users_control.js');
+var CodeError = require('../lib/error_code.js');
+var Auth = require('../lib/auth_control.js');
 // ====================================================================================================================================
 var CheckBson = /^[0-9a-fA-F]{24}$/;
 
@@ -16,12 +16,12 @@ var CheckBson = /^[0-9a-fA-F]{24}$/;
  *  Code:
  *      0 : Authentication OK
  */
-router.get('/:t/:id', function(req, res)
+router.get('/:id', function(req, res)
 {
     Auth.CheckAuth(req, res, function()
     {
         var idUser = req.params.id;
-        var token = req.params.t;
+        var token = req.query.t;
         if (!(CheckBson.test(idUser)))
             res.status(404).send({request: "error", code: CodeError.CodeUserIdNotFound,info: "User could not be found."});
         var db = req.db;
@@ -96,7 +96,7 @@ router.post('/', function(req, res)
                     }
                     else
                     {
-                        var new_user = { pseudo: login, password: pw, firstname: fn, lastname: ln, email: email};
+                        var new_user = {pseudo: login, password: pw, firstname: fn, lastname: ln, email: email};
                         user_collection.insert(new_user, function(err_insert, insert_res)
                         {
                             if (err_insert)
@@ -140,7 +140,7 @@ router.post('/', function(req, res)
  *  Code:
  *      0 : Authentication OK
  */
-router.put('/:t', function(req, res)
+router.put('/', function(req, res)
 {
     var form = new formidable.IncomingForm();
     var checkError;
@@ -177,21 +177,20 @@ router.put('/:t', function(req, res)
         Auth.CheckAuth(req, res, function()
         {
             var db = req.db;
-            var token = req.params.t;
+            var token = req.query.t;
             db.collection('user', function(err_collection, user_collection) {
                 if (err_collection)
                     res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
                 else
                 {
                     user_collection.findOne({auth_token: token} , function (error, account_res)
-                    {
-                        if (error)
-                            res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
-                        if (account_res === null)
-                            res.status(404).send({ request: "error", code: CodeError.CodeUserIdNotFound, info: "User could not be found." });
-                        else
                         {
-
+                            if (error)
+                                res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                            if (account_res === null)
+                                res.status(404).send({ request: "error", code: CodeError.CodeUserIdNotFound, info: "User could not be found." });
+                            else
+                        {
                             var update_user = {};
                             if (npw != undefined)
                             {
@@ -262,19 +261,18 @@ router.put('/:t', function(req, res)
  *  Code:
  *      0 : Authentication OK
  */
-router.delete('/:t', function(req, res)
+router.delete('/', function(req, res)
 {
     Auth.CheckAuth(req, res, function()
     {
         var db = req.db;
-        var token = req.params.t;
+        var token = req.query.t;
         db.collection('user', function(err_collection, user_collection)
         {
             if (err_collection)
                 res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
             else
-            {
-                user_collection.findOne({ auth_token : token}, function (error, account_res)
+            {                user_collection.findOne({ auth_token : token}, function (error, account_res)
                 {
                     if (error)
                         res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
@@ -292,7 +290,7 @@ router.delete('/:t', function(req, res)
                             {
                                 if (typeof account_res.avatar == "string")
                                     fs.unlink(account_res.avatar);
-                                res.status(201).send("deleted");
+                                res.status(200).send({request: "success", message: "deleted"});
                             }
                         });
                     }

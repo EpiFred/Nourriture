@@ -7,7 +7,7 @@ var mongo = require('mongodb');
 var BSON = mongo.BSONPure;
 // ===============================================================================================================================================
 var base_url = "./";
-var image_dir_url = base_url + "public/images/";
+var image_dir_url = base_url + "public/images/recipes";
 // ===============================================================================================================================================
 
 function CheckFieldCreate(field, type)

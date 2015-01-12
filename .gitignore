@@ -3,3 +3,4 @@ us.stackdump
 node_modules
 */test/result.xml
 npm-debug.log
+source/server/public/images
