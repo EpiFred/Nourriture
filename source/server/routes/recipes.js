@@ -7,9 +7,9 @@ var mongo = require('mongodb');
 var formidable = require('formidable');
 var BSON = mongo.BSONPure;
 var fs = require('fs');
-var CodeError = require('../public/javascripts/error_code.js');
-var Auth = require('../public/javascripts/auth_control.js');
-var RecipeControl =  require('../public/javascripts/recipe_control.js');
+var CodeError = require('../lib/error_code.js');
+var Auth = require('../lib/auth_control.js');
+var RecipeControl =  require('../lib/recipe_control.js');
 // ====================================================================================================================================
 var CheckBson = /^[0-9a-fA-F]{24}$/;
 
@@ -20,9 +20,8 @@ var CheckBson = /^[0-9a-fA-F]{24}$/;
  * Code:
  *      0 : All Clear
  */
-router.get('/:t/:id', function (req, res) {
+router.get('/:id', function (req, res) {
     Auth.CheckAuth(req, res, function() {
-        var token = req.params.t;
         var idRecip = req.params.id;
 
         if (!(CheckBson.test(idRecip)))
@@ -44,7 +43,7 @@ router.get('/:t/:id', function (req, res) {
  * Code:
  *      0 : All Clear
  */
-router.post('/:t', function (req, res) {
+router.post('/', function (req, res) {
     Auth.CheckAuth(req, res, function() {
         var form = new formidable.IncomingForm();
 
@@ -134,7 +133,7 @@ router.post('/:t', function (req, res) {
  * Code:
  *      0 : All Clear
  */
-router.put('/:t/:id', function (req, res) {
+router.put('/:id', function (req, res) {
     Auth.CheckAuth(req, res, function() {
         var form = new formidable.IncomingForm();
         form.parse(req, function (error, formInfos, files) {
@@ -237,8 +236,7 @@ router.put('/:t/:id', function (req, res) {
  * Code:
  *      0 : All Clear
  */
-// @TODO Manage delete picture
-router.delete('/:t/:id', function (req, res) {
+router.delete('/:id', function (req, res) {
     Auth.CheckAuth(req, res, function() {
         var db = req.db;
         db.collection('recipes', function(err_collection, recipes_collection) {
@@ -263,7 +261,7 @@ router.delete('/:t/:id', function (req, res) {
                             {
                                 if (typeof recipe_found.picture == "string")
                                     fs.unlink(recipe_found.picture);
-                                res.status(201).send("deleted");
+                                res.status(200).send({request: "success", message: "deleted"});
                             }
                         });
                     }

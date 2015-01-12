@@ -5,9 +5,8 @@
 var CodeError = require('./error_code.js');
 // ===============================================================================================================================================
 var base_url = "./";
-var image_dir_url = base_url + "public/images/";
+var image_dir_url = base_url + "public/images/foods";
 // ===============================================================================================================================================
-
 function CheckFieldCreate(field, type)
 {
     if (field === undefined)

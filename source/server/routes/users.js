@@ -3,25 +3,32 @@ var router = express.Router();
 var formidable = require('formidable');
 var md5 = require('MD5');
 var fs = require('fs');
-var UserControl = require('../public/javascripts/users_control.js');
-var CodeError = require('../public/javascripts/error_code.js');
-var Auth = require('../public/javascripts/auth_control.js');
+var UserControl = require('../lib/users_control.js');
+var CodeError = require('../lib/error_code.js');
+var Auth = require('../lib/auth_control.js');
 // ====================================================================================================================================
 var CheckBson = /^[0-9a-fA-F]{24}$/;
 
 // ====================================================================================================================================
-
+// ====================================================================================================================================
+router.get('/list', function(req, res) {
+    var db = req.db;
+    db.collection('user').find().toArray(function (err, items) {
+        res.json(items);
+    });
+});
+// ====================================================================================================================================
 /*
  *  Endpoint to get an user info
  *  Code:
  *      0 : Authentication OK
  */
-router.get('/:t/:id', function(req, res)
+router.get('/:id', function(req, res)
 {
     Auth.CheckAuth(req, res, function()
     {
         var idUser = req.params.id;
-        var token = req.params.t;
+        var token = req.query.t;
         if (!(CheckBson.test(idUser)))
             res.status(404).send({request: "error", code: CodeError.CodeUserIdNotFound,info: "User could not be found."});
         var db = req.db;
@@ -73,7 +80,8 @@ router.post('/', function(req, res)
             return (res.status(400).send(checkError));
         if ((checkError = UserControl.CheckName(ln, "lastname")).code != 0)
             return (res.status(400).send(checkError));
-        if ((checkError = UserControl.CheckPicture(avatar)).code != 0)
+        checkError = UserControl.CheckPicture(avatar);
+        if (!(checkError.code == 0 || checkError.code == CodeError.CodeFoodFieldMissing))
             return (res.status(400).send(checkError));
 
         var db = req.db;
@@ -96,7 +104,7 @@ router.post('/', function(req, res)
                     }
                     else
                     {
-                        var new_user = { pseudo: login, password: pw, firstname: fn, lastname: ln, email: email};
+                        var new_user = {pseudo: login, password: pw, firstname: fn, lastname: ln, email: email};
                         user_collection.insert(new_user, function(err_insert, insert_res)
                         {
                             if (err_insert)
@@ -105,26 +113,29 @@ router.post('/', function(req, res)
                                 res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
                             else
                             {
-                                var new_picture_url = UserControl.GetNewPictureName(avatar.name, insert_res[0]._id).url;
-                                fs.rename(avatar.path, new_picture_url, function (err_rename)
+                                var micro_update_user = {};
+                                if (avatar != undefined)
                                 {
-                                    if (err_rename)
-                                        res.status(CodeError.StatusPermissionFile).send({request: "error", code: CodeError.CodePermissionFile, message: "Can't save the file"});
-                                    else
+                                    var new_picture_url = UserControl.GetNewPictureName(avatar.name, insert_res[0]._id).url;
+                                    fs.rename(avatar.path, new_picture_url, function (err_rename)
                                     {
-                                        var date = new Date;
-                                        var token = md5(Math.floor(date.getTime()));
+                                        if (err_rename)
+                                            return (res.status(CodeError.StatusPermissionFile).send({request: "error", code: CodeError.CodePermissionFile, message: "Can't save the file"}));
+                                    });
+                                    micro_update_user.avatar = new_picture_url;
+                                }
+                                var date = new Date;
+                                var token = md5(Math.floor(date.getTime()));
+                                micro_update_user.auth_token = token;
 
-                                        user_collection.update({_id: insert_res._id}, {$set: {"auth_token": token, "avatar" : new_picture_url}}, function (err_update, field_updated)
-                                        {
-                                            if (err_update)
-                                                res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
-                                            else if (field_updated === null)
-                                                res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
-                                            else
-                                                res.status(201).send({request: "success", token: token, user: insert_res[0]});
-                                        });
-                                    }
+                                user_collection.update({_id: insert_res[0]._id}, {$set: micro_update_user}, function (err_update, field_updated)
+                                {
+                                    if (err_update)
+                                        res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error" + err_update});
+                                    else if (field_updated === null)
+                                        res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                                    else
+                                        res.status(201).send({request: "success", token: token, user: insert_res[0]});
                                 });
                             }
                         });
@@ -140,7 +151,7 @@ router.post('/', function(req, res)
  *  Code:
  *      0 : Authentication OK
  */
-router.put('/:t', function(req, res)
+router.put('/', function(req, res)
 {
     var form = new formidable.IncomingForm();
     var checkError;
@@ -168,7 +179,7 @@ router.put('/:t', function(req, res)
         if ((checkError = UserControl.CheckName(ln, "lastname")).code == CodeError.CodeUserFieldInvalid)
             return (res.status(400).send(checkError));
         checkError = UserControl.CheckPicture(avatar);
-        if (!(checkError.code == 0 || checkError.code == undefined))
+        if (!(checkError.code == 0 || checkError.code == CodeError.CodeFoodFieldMissing))
             return (res.status(400).send(checkError));
 
         if ((pw == undefined && npw != undefined) || (pw != undefined && npw == undefined))
@@ -177,7 +188,7 @@ router.put('/:t', function(req, res)
         Auth.CheckAuth(req, res, function()
         {
             var db = req.db;
-            var token = req.params.t;
+            var token = req.query.t;
             db.collection('user', function(err_collection, user_collection) {
                 if (err_collection)
                     res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
@@ -191,7 +202,6 @@ router.put('/:t', function(req, res)
                             res.status(404).send({ request: "error", code: CodeError.CodeUserIdNotFound, info: "User could not be found." });
                         else
                         {
-
                             var update_user = {};
                             if (npw != undefined)
                             {
@@ -262,19 +272,18 @@ router.put('/:t', function(req, res)
  *  Code:
  *      0 : Authentication OK
  */
-router.delete('/:t', function(req, res)
+router.delete('/', function(req, res)
 {
     Auth.CheckAuth(req, res, function()
     {
         var db = req.db;
-        var token = req.params.t;
+        var token = req.query.t;
         db.collection('user', function(err_collection, user_collection)
         {
             if (err_collection)
                 res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
             else
-            {
-                user_collection.findOne({ auth_token : token}, function (error, account_res)
+            {                user_collection.findOne({ auth_token : token}, function (error, account_res)
                 {
                     if (error)
                         res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
@@ -292,7 +301,7 @@ router.delete('/:t', function(req, res)
                             {
                                 if (typeof account_res.avatar == "string")
                                     fs.unlink(account_res.avatar);
-                                res.status(201).send("deleted");
+                                res.status(200).send({request: "success", message: "deleted"});
                             }
                         });
                     }

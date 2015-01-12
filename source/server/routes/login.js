@@ -5,8 +5,8 @@ var express = require('express');
 var router = express.Router();
 var formidable = require('formidable');
 var md5 = require('MD5');
-var UserControl = require('../public/javascripts/users_control.js');
-var CodeError = require('../public/javascripts/error_code.js');
+var UserControl = require('../lib/users_control.js');
+var CodeError = require('../lib/error_code.js');
 // ====================================================================================================================================
 
 // ====================================================================================================================================
@@ -39,16 +39,19 @@ router.post('/', function(req, res) {
                 res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
             else {
                 user_collection.findOne({pseudo: login, password: pw}, function (err_find, find_res) {
+                    console.log(login + " - " + pw);
                     if (err_find)
                         res.status(CodeError.StatusDB).send({code: CodeError.CodeDB, info: "DB Error"});
-                    else if (find_res === null)
+                    else if (find_res == null)
                         res.status(200).send({request: "error", code: CodeError.CodeBadLogin, info: "Invalid credentials."});
                     else {
                         var date = new Date;
                         var token = md5(Math.floor(date.getTime()));
                         //console.log(token);
+                        if (find_res.auth_token)
+                            delete find_res.auth_token;
 
-                        user_collection.update( {_id : find_res._id}, { $set: {"auth_token":token}} , function(err_update, field_updated) {
+                        user_collection.update( {_id : find_res._id}, { $set: {auth_token:token}} , function(err_update, field_updated) {
                             if (err_update)
                                 res.status(CodeError.StatusDB).send({code: CodeError.CodeDB, info: "DB Error"});
                             else if (field_updated === null)

@@ -16,7 +16,7 @@ var CodeError = require('./error_code.js');
  */
 function CheckAuth(req, res, next)
 {
-    var token = req.params.t;
+    var token = req.query.t;
     //console.log(token);
     if (token === undefined)
         res.status(401).send({request: "error", code: CodeError.CodeUnauthorized, message: "You must be authenticated in order to access to this resource."});
