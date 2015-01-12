@@ -10,7 +10,6 @@ var Auth = require('../lib/auth_control.js');
 var CheckBson = /^[0-9a-fA-F]{24}$/;
 
 // ====================================================================================================================================
-
 /*
  *  Endpoint to get an user info
  *  Code:
@@ -184,12 +183,12 @@ router.put('/', function(req, res)
                 else
                 {
                     user_collection.findOne({auth_token: token} , function (error, account_res)
-                        {
-                            if (error)
-                                res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
-                            if (account_res === null)
-                                res.status(404).send({ request: "error", code: CodeError.CodeUserIdNotFound, info: "User could not be found." });
-                            else
+                    {
+                        if (error)
+                            res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                        if (account_res === null)
+                            res.status(404).send({ request: "error", code: CodeError.CodeUserIdNotFound, info: "User could not be found." });
+                        else
                         {
                             var update_user = {};
                             if (npw != undefined)
