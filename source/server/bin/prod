@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+
+// Loading configuration
+var config = require("../config");
+var currentConfig = config.load('production');
+currentConfig.port = process.argv[3] || process.env.PORT || currentConfig.port;
+
+var app = require("../app");
+
+var server = app.listen(currentConfig.port);

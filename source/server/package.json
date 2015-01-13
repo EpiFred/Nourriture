@@ -1,0 +1,25 @@
+{
+  "name": "Nourriture",
+  "version": "0.0.1",
+  "private": true,
+  "main": "app",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha test > test/result.xml"
+  },
+  "dependencies": {
+    "express": "~4.0.0",
+    "serve-favicon": "*",
+    "morgan": "~1.0.0",
+    "cookie-parser": "~1.0.1",
+    "body-parser": "~1.0.0",
+    "jade": "*",
+    "mongodb": "*",
+    "mongoskin": "*",
+    "formidable": "1.0.16",
+    "MD5": "*"
+  },
+  "devDependencies": {
+    "debug": "~0.7.4",
+    "mocha": "~2.x"
+  }
+}
