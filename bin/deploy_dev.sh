@@ -9,8 +9,6 @@ ssh ubuntu@localhost <<EOF
  sudo ./node_install.sh
  ./mongodb_launch.sh dev
  ./nourriture_launch.sh dev
- ps -e | grep mongodb
- ps -e | grep node
  exit
  EOF
 
