@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ## Script to restart Nourriture Node server
-## Must be launch from <Nourriture>/bin
+## Must be launched from <Nourriture>/bin
 
 if [ "$1" = "dev" ] || [ "$1" = "development" ]; then
     MODE=dev
@@ -18,6 +18,7 @@ ssh ubuntu@localhost <<EOF
  ./node_modules/forever/bin/forever stop --uid "$UID" bin/$MODE
  cd ../../bin
  rm -rf "~/.forever/pids/$PIDFILE"
+ ./mongodb_restart.sh $MODE
  ./nourriture_launch.sh $MODE
  exit
 EOF

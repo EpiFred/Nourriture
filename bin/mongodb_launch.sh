@@ -16,6 +16,7 @@ if ! [ -e $DB_PATH/mongodb.pid ]; then
     fi
     if ! mongod --config $DB_PATH/$CONFIG --logpath $DB_PATH/mongodb.log --dbpath $DB_PATH/data --pidfilepath $DB_PATH/mongodb.pid; then
 	rm -f $DB_PATH/mongodb.pid
+	exit 1
     fi
 fi
 
