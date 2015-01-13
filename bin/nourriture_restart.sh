@@ -17,6 +17,9 @@ ssh ubuntu@localhost <<EOF
  cd nourriture_$MODE/source/server
  ./node_modules/forever/bin/forever stop --uid "$UID" bin/$MODE
  cd ../../bin
+ echo "~/.forever/pids/$PIDFILE"
+ ls -l "~/.forever/pids/$PIDFILE"
+ ls -l "~/.forever/pids/"
  rm -rf "~/.forever/pids/$PIDFILE"
  ./mongodb_restart.sh $MODE
  ./nourriture_launch.sh $MODE
