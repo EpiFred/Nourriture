@@ -30,9 +30,9 @@ router.post('/', function (req, res) {
                     if (/^[\],:{}\s]*$/.test(type.replace(/\\["\\\/bfnrtu]/g, '@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').replace(/(?:^|:|,)(?:\s*\[)+/g, '')))
                         type = JSON.parse(formInfos.type);
                     else
-                        return (res.status(400).send({request: "error", code: CodeError.CodeFoodFieldInvalid, message: "The field 'type' is invalid. Not the format of a JSON"}));
+                        return (res.status(400).send({request: "error", code: CodeError.CodeFoodFieldInvalid, message: "The field 'type' is invalid. Not the format of a JSON. Ex:[{\"type\":\"foods\"}]"}));
                 else
-                    return (res.status(400).send({request: "error", code: CodeError.CodeSearchFieldInvalid, message: "The field 'type' is invalid"}));
+                    return (res.status(400).send({request: "error", code: CodeError.CodeSearchFieldInvalid, message: "The field 'type' is invalid. Ex:[{\"type\":\"foods\"}]"}));
             else
                 return (SearchControl.SearchAll(searching, req, res));
 
@@ -49,27 +49,27 @@ router.post('/', function (req, res) {
                         u_want.recipes = 1;
                 }
             }
-           if ((u_want.users == 1 && u_want.foods == 1 && u_want.recipes == 1) || (u_want.users == 0 && u_want.foods == 0 && u_want.recipes == 0))
+            if ((u_want.users == 1 && u_want.foods == 1 && u_want.recipes == 1) || (u_want.users == 0 && u_want.foods == 0 && u_want.recipes == 0))
                SearchControl.SearchAll(searching, req, res);
-           else if (u_want.users == 1 && u_want.foods == 1 && u_want.recipes == 0)
+            else if (u_want.users == 1 && u_want.foods == 1 && u_want.recipes == 0)
                SearchControl.SearchUF(searching, req, res);
-           else if ( u_want.users == 1 && u_want.foods == 0 && u_want.recipes == 1)
+            else if ( u_want.users == 1 && u_want.foods == 0 && u_want.recipes == 1)
                SearchControl.SearchUR(searching, req, res);
-           else if (u_want.users == 0 && u_want.foods == 1 && u_want.recipes == 1)
+            else if (u_want.users == 0 && u_want.foods == 1 && u_want.recipes == 1)
                SearchControl.SearchRF(searching, req, res);
-           else if (u_want.users == 1 && u_want.foods == 0 && u_want.recipes == 0)
+            else if (u_want.users == 1 && u_want.foods == 0 && u_want.recipes == 0)
                SearchControl.SearchUsers(searching, req, res, function(users_list) {
                    res.status(200).send({request: "success", users: users_list});
                });
-           else if (u_want.users == 0 && u_want.foods == 1 && u_want.recipes == 0)
+            else if (u_want.users == 0 && u_want.foods == 1 && u_want.recipes == 0)
                SearchControl.SearchFoods(searching, req, res, function(foods_list) {
                    res.status(200).send({request: "success", foods: foods_list});
                });
-           else if (u_want.users == 0 && u_want.foods == 0 && u_want.recipes == 1)
+            else if (u_want.users == 0 && u_want.foods == 0 && u_want.recipes == 1)
                SearchControl.SearchRecipes(searching, req, res, function(recipes_list) {
                    res.status(200).send({request: "success", recipes: recipes_list});
                });
-           else
+            else
                res.status(500).send({request:"error"});
         });
     });
