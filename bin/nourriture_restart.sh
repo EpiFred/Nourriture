@@ -16,6 +16,7 @@ ssh ubuntu@localhost <<EOF
  export LC_CTYPE="en_US.UTF-8"
  rm -rf ".forever/pids/$PIDFILE"
  cd nourriture_$MODE/source/server
+ npm install forever
  ./node_modules/forever/bin/forever stop --uid "$UID" bin/$MODE
  cd ../../bin
  echo "NOURRITURE_RESTART PARAMETER: $MODE"
