@@ -18,6 +18,6 @@ ssh ubuntu@localhost <<EOF
  ./node_modules/forever/bin/forever stop --uid "$UID" bin/$MODE
  cd ../../bin
  rm -rf "~/.forever/pids/$PIDFILE"
- ./nourriture_launch.sh dev
+ ./nourriture_launch.sh $MODE
  exit
 EOF
