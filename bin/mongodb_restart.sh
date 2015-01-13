@@ -6,6 +6,8 @@
 CURRENT_BIN_PATH=`pwd`
 DB_PATH=$CURRENT_BIN_PATH/../source/server/db
 
+echo "MONGODB_RESTART PARAMETER: $1"
+
 if [ "$1" = "dev" ] || [ "$1" = "development" ]; then
     MODE=dev
 else

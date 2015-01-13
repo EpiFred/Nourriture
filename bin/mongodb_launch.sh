@@ -5,6 +5,8 @@
 CURRENT_BIN_PATH=`pwd`
 DB_PATH=$CURRENT_BIN_PATH/../source/server/db
 
+echo "MONGODB_LAUNCH PARAMETER: $1"
+
 if ! [ -e $DB_PATH/mongodb.pid ]; then
     if ! [ -d $DB_PATH/data ]; then
 	mkdir $DB_PATH/data

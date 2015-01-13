@@ -18,6 +18,7 @@ ssh ubuntu@localhost <<EOF
  cd nourriture_$MODE/source/server
  ./node_modules/forever/bin/forever stop --uid "$UID" bin/$MODE
  cd ../../bin
+ echo "NOURRITURE_RESTART PARAMETER: $MODE"
  ./mongodb_restart.sh $MODE
  ./nourriture_launch.sh $MODE
  exit
