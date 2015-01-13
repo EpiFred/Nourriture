@@ -14,7 +14,7 @@ fi
 
 mongod --shutdown --dbpath $DB_PATH/data
 rm -rf $DB_PATH/mongodb.pid
-if ! ./mongodb_launch.sh; then
+if ! ./mongodb_launch.sh $MODE; then
     echo "Mongodb launching has failed."
     exit 1
 fi
