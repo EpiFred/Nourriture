@@ -19,7 +19,6 @@ ssh ubuntu@localhost <<EOF
  npm install forever
  ./node_modules/forever/bin/forever stop --uid "$UID" bin/$MODE
  cd ../../bin
- echo "NOURRITURE_RESTART PARAMETER: $MODE"
  ./mongodb_restart.sh $MODE
  ./nourriture_launch.sh $MODE
  exit
