@@ -14,6 +14,16 @@ var RecipeControl =  require('../lib/recipe_control.js');
 var CheckBson = /^[0-9a-fA-F]{24}$/;
 
 // ====================================================================================================================================
+///*
+// * GET recipeslist.
+// */
+router.get('/list', function(req, res) {
+    var db = req.db;
+    db.collection('recipes').find().toArray(function (err, items) {
+        res.json(items);
+    });
+});
+// ====================================================================================================================================
 
 /*
  * Get a Recipe
@@ -268,16 +278,6 @@ router.delete('/:id', function (req, res) {
                 });
             }
         });
-    });
-});
-
-///*
-// * GET recipeslist.
-// */
-router.get('/list', function(req, res) {
-    var db = req.db;
-    db.collection('recipes').find().toArray(function (err, items) {
-        res.json(items);
     });
 });
 

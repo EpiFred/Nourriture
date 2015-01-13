@@ -11,6 +11,14 @@ var FoodControl =  require('../lib/food_control.js');
 var CheckBson = /^[0-9a-fA-F]{24}$/;
 
 // ===============================================================================================================================================
+// ========================================================================== OLD ================================================================
+router.get('/list', function(req, res) {
+    var db = req.db;
+    db.collection('food').find().toArray(function (err, items) {
+        res.json(items);
+    });
+});
+// ========================================================================== OLD ================================================================
 /*
  * Get a Food
  * Code:
@@ -49,10 +57,11 @@ router.post('/', function (req, res) {
             var picture = files.picture;
             var nutritional_values = formInfos.nutritional_values;
 
-            if (/^[\],:{}\s]*$/.test(nutritional_values.replace(/\\["\\\/bfnrtu]/g, '@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').replace(/(?:^|:|,)(?:\s*\[)+/g, '')))
-                nutritional_values = JSON.parse(formInfos.nutritional_values);
-            else
-                return (res.status(400).send({request: "error", code: CodeError.CodeFoodFieldInvalid, message: "The field 'nutritional_values' is invalid. Not the format of a JSON"}));
+            if (nutritional_values != undefined)
+                if (/^[\],:{}\s]*$/.test(nutritional_values.replace(/\\["\\\/bfnrtu]/g, '@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').replace(/(?:^|:|,)(?:\s*\[)+/g, '')))
+                    nutritional_values = JSON.parse(formInfos.nutritional_values);
+                else
+                    return (res.status(400).send({request: "error", code: CodeError.CodeFoodFieldInvalid, message: "The field 'nutritional_values' is invalid. Not the format of a JSON"}));
 
             if ((checkError = FoodControl.CheckFieldCreate(name, "name")).code != 0)
                 return (res.status(400).send(checkError));
@@ -92,7 +101,7 @@ router.post('/', function (req, res) {
                                         else
                                         {
                                             insert_res[0].picture = new_picture_url;
-                                            res.status(201).send({request: "success", recipe: insert_res[0]});
+                                            res.status(201).send({request: "success", food: insert_res[0]});
                                         }
                                     })
                                 }
@@ -241,13 +250,6 @@ router.delete('/:id', function (req, res) {
                });
            }
         });
-    });
-});
-// ========================================================================== OLD =============================================================================
-router.get('/list', function(req, res) {
-    var db = req.db;
-    db.collection('food').find().toArray(function (err, items) {
-        res.json(items);
     });
 });
 // ============================================================================================================================================================

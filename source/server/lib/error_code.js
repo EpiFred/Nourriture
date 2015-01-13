@@ -39,4 +39,6 @@ exports.CodeFoodFieldMissing = 401;
 exports.CodeFoodFieldInvalid = 402;
 exports.CodeFoodGetNotFound = 403;
 exports.CodeFoodEditNotFound = 404;
+// SEARCH
+exports.CodeSearchFieldInvalid = 502;
 
