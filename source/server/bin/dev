@@ -1,9 +1,0 @@
-#!/usr/bin/env node
-
-// Loading configuration
-var config = require("../config");
-var currentConfig = config.load('development');
-
-var app = require("../app");
-
-var server = app.listen(currentConfig.port);
