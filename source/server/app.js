@@ -11,7 +11,7 @@ var currentConfig = config.getCurrent() || config.load();
 
 // Database
 var mongoskin = require('mongoskin');
-var db = mongoskin.db("mongodb://localhost:27017/Nourriture", {native_parser:true});
+var db = mongoskin.db("mongodb://localhost:" + currentConfig.dbPort + "/Nourriture", { native_parser: true });
 
 // Route directory files
 var routes = require('./routes/index');
