@@ -26,11 +26,25 @@ router.post('/', function (req, res) {
             var type = formInfos.type;
 
             if (type != undefined)
-                if (type != "")
+                if (type != "") {
+                    try {
+
                     if (/^[\],:{}\s]*$/.test(type.replace(/\\["\\\/bfnrtu]/g, '@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').replace(/(?:^|:|,)(?:\s*\[)+/g, '')))
                         type = JSON.parse(formInfos.type);
                     else
-                        return (res.status(400).send({request: "error", code: CodeError.CodeFoodFieldInvalid, message: "The field 'type' is invalid. Not the format of a JSON. Ex:[{\"type\":\"foods\"}]"}));
+                        return (res.status(400).send({
+                            request: "error",
+                            code: CodeError.CodeFoodFieldInvalid,
+                            message: "The field 'type' is invalid. Not the format of a JSON. Ex:[{\"type\":\"foods\"}]"
+                        }));
+                    } catch(e) {
+                        return (res.status(400).send({
+                            request: "error",
+                            code: CodeError.CodeFoodFieldInvalid,
+                            message: "The field 'type' is invalid. Not the format of a JSON. Ex:[{\"type\":\"foods\"}]"
+                        }));
+                    }
+                }
                 else
                     return (res.status(400).send({request: "error", code: CodeError.CodeSearchFieldInvalid, message: "The field 'type' is invalid. Ex:[{\"type\":\"foods\"}]"}));
             else
