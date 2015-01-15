@@ -450,13 +450,14 @@ router.delete('/favorite/:id', function(req, res) {
             else {
 
                 // Checking favorite
-                if (users.favorites.indexOf(favoriteId) > -1) {
+                /*if (users[0].favorites.indexOf(favoriteId) > -1) {
                     res.end();
                     //users.favorites.slice();
                 }
                 else {
                     res.status(400).json({"request": "error", "code": 4, "message": "Favorite could not be found."});
-                }
+                }*/
+                res.end();
             }
         });
     });

@@ -34,7 +34,6 @@ else
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 app.use("/public", express.static(path.join(__dirname, 'public')));
 
 // Make our db accessible to our router
@@ -43,6 +42,10 @@ app.use(function(req,res,next){
     next();
 });
 
+(app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    next();
+}));
 
 // Route
 app.use('/', routes);
