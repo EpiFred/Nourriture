@@ -22,7 +22,7 @@ exports.CodeSyntaxEmail = 206;
 exports.CodeBadPasswordEdit = 207;
 exports.CodeEmailAlreadyUsed = 208;
 exports.CodeEditPassword = 209;
-exports.CodeUserEditNothing = 310;
+exports.CodeUserEditNothing = 210;
 // RECIPES
 exports.CodeRecipeFieldMissing = 301;
 exports.CodeRecipeFieldInvalid = 302;
@@ -39,6 +39,7 @@ exports.CodeFoodFieldMissing = 401;
 exports.CodeFoodFieldInvalid = 402;
 exports.CodeFoodGetNotFound = 403;
 exports.CodeFoodEditNotFound = 404;
+exports.CodeFoodDeleteNotFound = 405;
 // SEARCH
 exports.CodeSearchFieldInvalid = 502;
 

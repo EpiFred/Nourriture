@@ -37,7 +37,7 @@ router.get('/:id', function (req, res) {
             else if (food_res == null)
                 res.status(404).send({request: "error", code: CodeError.CodeFoodGetNotFound, info: "Food could not be found."});
             else
-                res.status(201).send({request: "success", recipe: food_res});
+                res.status(201).send({request: "success", food: food_res});
         });
     });
 });
@@ -231,7 +231,7 @@ router.delete('/:id', function (req, res) {
                   if (err_find)
                       res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
                   else if (food_found == null)
-                      res.status(404).send({request: "error", code: CodeError.CodeFoodEditNotFound, info: "Food could not be found."});
+                      res.status(404).send({request: "error", code: CodeError.CodeFoodDeleteNotFound, info: "Food could not be found."});
                   else
                   {
                       food_collection.remove({ _id : food_found._id}, function(err_del, res_del){

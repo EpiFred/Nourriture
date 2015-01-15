@@ -17,8 +17,10 @@ function SearchUsers(msg, req, res, next)
        else
        {
            var user_find = {};
-           if (msg != undefined && msg != "")
-                user_find = {$or: [{pseudo : new RegExp(msg)}, {firstname: new RegExp(msg)}, {lastname: new RegExp(msg)}]};
+           if (msg != undefined && msg != "") {
+               msg = { $regex: new RegExp(msg, "i")};
+               user_find = {$or: [{pseudo: msg}, {firstname: msg}, {lastname: msg}]};
+           }
            user_collection.find(user_find, function(err_find, found_list)
            {
               if (err_find || found_list == null)
@@ -46,7 +48,11 @@ function SearchRecipes(msg, req, res, next)
             return (res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"}));
         else
         {
-            recipes_collection.find({name : new RegExp(msg)}, function(err_find, found_list)
+            if (msg != undefined && msg != "")
+                msg = { $regex: new RegExp(msg, "i")};
+            else
+                msg = new RegExp();
+            recipes_collection.find({name : msg}, function(err_find, found_list)
             {
                 if (err_find || found_list == null)
                     return (res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"}));
@@ -68,7 +74,12 @@ function SearchFoods(msg, req, res, next)
             return (res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"}));
         else
         {
-            foods_collection.find({name : new RegExp(msg)}, function(err_find, found_list)
+            console.log(msg);
+            if (msg != undefined && msg != "")
+                msg = { $regex: new RegExp(msg, "i")};
+            else
+                msg = new RegExp();
+            foods_collection.find({name : msg}, function(err_find, found_list)
             {
                 if (err_find || found_list == null)
                     return (res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"}));
