@@ -100,12 +100,12 @@ router.get('/:id', function(req, res) {
                 res.status(404).send({ request: "error", code: CodeError.CodeUserIdNotFound, info: "User could not be found." });
             else
             if (account_res.auth_token === token)
-                res.status(201).send({request: "success", user: account_res});
+                res.status(200).send({request: "success", user: account_res});
             else
             {
                 delete account_res.auth_token;
                 delete account_res.password;
-                res.status(201).send({request: "success", user: account_res});
+                res.status(200).send({request: "success", user: account_res});
             }
         });
     });
@@ -314,7 +314,7 @@ router.put('/', function(req, res) {
                                         new_user_updated[_old] = account_res[_old];
                                     for (var _new in update_user)
                                         new_user_updated[_new] = update_user[_new];
-                                    res.status(201).send({request: "success", user: new_user_updated});
+                                    res.status(200).send({request: "success", user: new_user_updated});
                                 }
                             });
                         }
@@ -409,7 +409,7 @@ router.post('/favorite', function(req, res){
                                 else if (users.length == 0)
                                     res.status(500).json({"request": "error"});
                                 else if (users[0].favorites.indexOf(recipeId) > -1)
-                                    res.status(400).json({"request": "error", "code": 4, "message": "Recipe is already in favorites."});
+                                    res.status(400).json({"request": "error", "code": 212, "message": "Recipe is already in favorites."});
                                 else {
 
                                     // Update favorites
@@ -439,7 +439,7 @@ router.delete('/favorite/:id', function(req, res) {
         var db = req.db;
         var favoriteId = req.params.id;
 
-        // Retrieving user
+        // Retrieve user
         db.collection("user").find({auth_token: token}, {}).toArray(function(err, users) {
             if (err) {
                 console.log("Error while searching user: " + err);
@@ -449,15 +449,41 @@ router.delete('/favorite/:id', function(req, res) {
                 res.status(500).json({"request": "error"});
             else {
 
-                // Checking favorite
-                /*if (users[0].favorites.indexOf(favoriteId) > -1) {
-                    res.end();
-                    //users.favorites.slice();
-                }
+                var user = users[0];
+
+                // Check favorite
+                if (typeof user.favorites === "undefined" ||
+                    user.favorites === null ||
+                    user.favorites.length == 0)
+                    res.status(400).json({"request": "error", "code": 211, "message": "Favorite could not be found."});
                 else {
-                    res.status(400).json({"request": "error", "code": 4, "message": "Favorite could not be found."});
-                }*/
-                res.end();
+
+                    // Remove favorite
+                    var index = user.favorites.indexOf(favoriteId);
+
+                    if (index == -1)
+                        res.status(400).json({"request": "error", "code": 211, "message": "Favorite could not be found."});
+                    else {
+                        user.favorites.splice(index, 1);
+
+                        // Safety check
+                        while ((index = user.favorites.indexOf(favoriteId)) != -1) {
+                            user.favorites.splice(index, 1);
+                        }
+
+                        // Update user
+                        db.collection("user").updateById(user._id, {$set: {favorites: user.favorites}}, function(err, count, status) {
+                            if (err) {
+                                console.log("Favorites update error: " + err);
+                                res.status(500).json({"request": "error"});
+                            }
+                            else if (count == 0)
+                                res.status(500).json({"request": "error"});
+                            else
+                                res.status(200).json({"request": "success"});
+                        });
+                    }
+                }
             }
         });
     });
