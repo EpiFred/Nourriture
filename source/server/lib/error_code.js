@@ -2,44 +2,55 @@
  * Created by Julian on 07/01/2015.
  */
 
-// UNDETERMINED
-exports.CodeDB = 1;
-exports.StatusPermissionFile = 1;
-exports.CodePermissionFile = 1;
-// GENERAL
-exports.CodeUnauthorized = 100;
-exports.CodeExpiredToken = 101;
-exports.CodeNoSuchFile = 102;
-exports.CodeNotAnImage = 103;
-exports.StatusDB = 500;
-// USER
-exports.CodeUserFieldMissing = 201;
-exports.CodeUserFieldInvalid = 202;
-exports.CodeBadLogin = 203;
-exports.CodeUserIdNotFound = 204;
-exports.CodeUserAlreadyExist = 205;
-exports.CodeSyntaxEmail = 206;
-exports.CodeBadPasswordEdit = 207;
-exports.CodeEmailAlreadyUsed = 208;
-exports.CodeEditPassword = 209;
-exports.CodeUserEditNothing = 210;
-// RECIPES
-exports.CodeRecipeFieldMissing = 301;
-exports.CodeRecipeFieldInvalid = 302;
-exports.CodeRecipeGetNotFound = 303;
-exports.CodeRecipeCreateNoFood = 304;
-exports.CodeRecipeFoodDoesNotExist = 305;
-exports.CodeRecipeFoodsListInvalid = 306;
-exports.CodeRecipeFoodsNameDoesNotMatch = 307;
-exports.CodeRecipeEditNotFound = 308;
-exports.CodeRecipeRemoveNotFound = 309;
-exports.CodeRecipeEditNothing = 310;
-// FOOD
-exports.CodeFoodFieldMissing = 401;
-exports.CodeFoodFieldInvalid = 402;
-exports.CodeFoodGetNotFound = 403;
-exports.CodeFoodEditNotFound = 404;
-exports.CodeFoodDeleteNotFound = 405;
-// SEARCH
-exports.CodeSearchFieldInvalid = 502;
+var codes = {
+    undetermined: {
+        codeDB: 1,
+        statusPermissionFile: 1,
+        codePermissionFile: 1
+    },
+    api: {
+        unauthorized: 100,
+        expiredToken: 101,
+        noSuchFile: 102,
+        notAnImage: 103,
+        statusDB: 500
+    },
+    user: {
+        missingField: 201,
+        invalidField: 202,
+        badLogin: 203,
+        idNotFound: 204,
+        alreadyExist: 205,
+        syntaxEmail: 206,
+        badPasswordEdit: 207,
+        emailAlreadyUsed: 208,
+        editPassword: 209,
+        editNothing: 210,
+        recipeNotFound: 211,
+        recipeAlreadyInFavorites: 212
+    },
+    recipe: {
+        missingField: 301,
+        invalidField: 302,
+        getNotFound: 303,
+        createNoFood: 304,
+        foodDoesNotExist: 305,
+        invalidFoodsList: 306,
+        foodsNameDoesNotMatch: 307,
+        editNotFound: 308,
+        removeNotFound: 309,
+        editNothing: 310
+    },
+    food: {
+        missingField: 401,
+        invalidField: 402,
+        getNotFound: 403,
+        editNotFound: 404,
+        deleteNotFound: 405
+    },
+    search: {
+        invalidField: 502
+    }
+};
 
+module.exports = codes;

@@ -2,7 +2,7 @@
  * Created by Julian on 13/01/2015.
  */
 
-var CodeError = require('./error_code.js');
+var errorCodes = require('./error_code.js');
 
 // ===============================================================================================================================================
 
@@ -13,7 +13,7 @@ function SearchUsers(msg, req, res, next)
     db.collection("user", function(err_collection, user_collection)
     {
        if (err_collection ||  user_collection == null)
-           return (res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"}));
+           return (res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"}));
        else
        {
            var user_find = {};
@@ -24,7 +24,7 @@ function SearchUsers(msg, req, res, next)
            user_collection.find(user_find, function(err_find, found_list)
            {
               if (err_find || found_list == null)
-                  return (res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"}));
+                  return (res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"}));
               found_list.toArray(function(err, items)
               {
                   for (var i = 0; i < items.length; i++)
@@ -45,7 +45,7 @@ function SearchRecipes(msg, req, res, next)
     db.collection("recipes", function(err_collection, recipes_collection)
     {
         if (err_collection ||  recipes_collection == null)
-            return (res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"}));
+            return (res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"}));
         else
         {
             if (msg != undefined && msg != "")
@@ -55,7 +55,7 @@ function SearchRecipes(msg, req, res, next)
             recipes_collection.find({name : msg}, function(err_find, found_list)
             {
                 if (err_find || found_list == null)
-                    return (res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"}));
+                    return (res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"}));
                 found_list.toArray(function(err, items)
                 {
                     next(items);
@@ -71,7 +71,7 @@ function SearchFoods(msg, req, res, next)
     db.collection("food", function(err_collection,foods_collection)
     {
         if (err_collection ||  foods_collection == null)
-            return (res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"}));
+            return (res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"}));
         else
         {
             console.log(msg);
@@ -82,7 +82,7 @@ function SearchFoods(msg, req, res, next)
             foods_collection.find({name : msg}, function(err_find, found_list)
             {
                 if (err_find || found_list == null)
-                    return (res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"}));
+                    return (res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"}));
                 found_list.toArray(function(err, items)
                 {
                     next(items);

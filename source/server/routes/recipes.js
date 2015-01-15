@@ -7,7 +7,7 @@ var mongo = require('mongodb');
 var formidable = require('formidable');
 var BSON = mongo.BSONPure;
 var fs = require('fs');
-var CodeError = require('../lib/error_code.js');
+var errorCodes = require('../lib/error_code.js');
 var Auth = require('../lib/auth_control.js');
 var RecipeControl =  require('../lib/recipe_control.js');
 // ====================================================================================================================================
@@ -39,13 +39,13 @@ router.get('/:id', function (req, res) {
         var idRecip = req.params.id;
 
         if (!(CheckBson.test(idRecip)))
-            res.status(404).send({request: "error", code: CodeError.CodeRecipeGetNotFound, info: "Recipe could not be found."});
+            res.status(404).send({request: "error", code: errorCodes.recipes.getNotFound, info: "Recipe could not be found."});
         var db = req.db;
         db.collection('recipes').findById(idRecip, function (err_collection, recipes_res) {
             if (err_collection)
-                res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
             else if (recipes_res == null)
-                res.status(404).send({request: "error", code: CodeError.CodeRecipeGetNotFound, info: "Recipe could not be found."});
+                res.status(404).send({request: "error", code: errorCodes.recipes.getNotFound, info: "Recipe could not be found."});
             else
                 res.status(201).send({request: "success", recipe: recipes_res});
         });
@@ -74,9 +74,9 @@ router.post('/', function (req, res) {
                 if (/^[\],:{}\s]*$/.test(foods.replace(/\\["\\\/bfnrtu]/g, '@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').replace(/(?:^|:|,)(?:\s*\[)+/g, '')))
                     foods = JSON.parse(formInfos.foods);
                 else
-                    return (res.status(400).send({request: "error", code: CodeError.CodeRecipeFieldInvalid, message: "The field 'foods' is invalid. Not the format of a JSON"}));
+                    return (res.status(400).send({request: "error", code: errorCodes.recipes.invalidField, message: "The field 'foods' is invalid. Not the format of a JSON"}));
             else
-                return ({request: "error", code: CodeError.CodeRecipeFieldMissing, message: "The field 'foods' is mandatory and has not been specified."});
+                return ({request: "error", code: errorCodes.recipes.missingField, message: "The field 'foods' is mandatory and has not been specified."});
 
 
             if ((checkError = RecipeControl.CheckFieldCreate(name, "name")).code != 0)
@@ -99,32 +99,32 @@ router.post('/', function (req, res) {
                 db.collection("recipes", function(err_collection, recipes_collection)
                 {
                     if (err_collection)
-                        res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                        res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
                     else if (recipes_collection == null)
-                        res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                        res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
                     else
                     {
                         recipes_collection.insert(new_recipe, function(err_insert, insert_res)
                         {
                             if (err_insert)
-                                res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                                res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
                             else if (insert_res == null)
-                                res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                                res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
                             else
                             {
                                 var new_picture_url = RecipeControl.GetNewPictureName(picture.name, insert_res[0]._id).url;
                                 fs.rename(picture.path, new_picture_url, function (err_rename)
                                 {
                                     if (err_rename)
-                                        res.status(CodeError.StatusPermissionFile).send({request: "error", code: CodeError.CodePermissionFile, message: "Can't save the file"});
+                                        res.status(errorCodes.undetermined.statusPermissionFile).send({request: "error", code: errorCodes.undetermined.codePermissionFile, message: "Can't save the file"});
                                     else
                                     {
                                         recipes_collection.update({_id : insert_res[0]._id} , {$set : {picture : new_picture_url}}, function (err_update, update_done)
                                         {
                                             if (err_update)
-                                                res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                                                res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
                                             else if (update_done != 1)
-                                                res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                                                res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
                                             else
                                             {
                                                 insert_res[0].picture = new_picture_url;
@@ -152,7 +152,7 @@ router.put('/:id', function (req, res) {
         var form = new formidable.IncomingForm();
         form.parse(req, function (error, formInfos, files) {
             if (Object.keys(formInfos).length == 0 && Object.keys(files).length == 0)
-                return (res.status(400).send({request: "error", code: CodeError.CodeRecipeEditNothing, message: "Nothing to update."}));
+                return (res.status(400).send({request: "error", code: errorCodes.recipes.editNothing, message: "Nothing to update."}));
             var checkError;
             var name = formInfos.name;
             var description = formInfos.description;
@@ -165,17 +165,17 @@ router.put('/:id', function (req, res) {
                 if (/^[\],:{}\s]*$/.test(foods.replace(/\\["\\\/bfnrtu]/g, '@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').replace(/(?:^|:|,)(?:\s*\[)+/g, '')))
                     foods = JSON.parse(formInfos.foods);
                 else
-                    return (res.status(400).send({request: "error", code: CodeError.CodeRecipeFieldInvalid, message: "The field 'foods' is invalid. Not the format of a JSON"}));
+                    return (res.status(400).send({request: "error", code: errorCodes.recipes.invalidField, message: "The field 'foods' is invalid. Not the format of a JSON"}));
 
-            if ((checkError = RecipeControl.CheckFieldCreate(name, "name")).code == CodeError.CodeRecipeFieldInvalid)
+            if ((checkError = RecipeControl.CheckFieldCreate(name, "name")).code == errorCodes.recipes.invalidField)
                 return (res.status(400).send(checkError));
-            if ((checkError = RecipeControl.CheckFieldCreate(description, "description")).code == CodeError.CodeRecipeFieldInvalid)
+            if ((checkError = RecipeControl.CheckFieldCreate(description, "description")).code == errorCodes.recipes.invalidField)
                 return (res.status(400).send(checkError));
-            if ((checkError = RecipeControl.CheckFieldCreate(mt, "make_time")).code == CodeError.CodeRecipeFieldInvalid)
+            if ((checkError = RecipeControl.CheckFieldCreate(mt, "make_time")).code == errorCodes.recipes.invalidField)
                 return (res.status(400).send(checkError));
-            if ((checkError = RecipeControl.CheckFieldCreate(ct, "cooking_time")).code == CodeError.CodeRecipeFieldInvalid)
+            if ((checkError = RecipeControl.CheckFieldCreate(ct, "cooking_time")).code == errorCodes.recipes.invalidField)
                 return (res.status(400).send(checkError));
-            if ((checkError = RecipeControl.CheckFieldCreate(instruction, "instruction")).code == CodeError.CodeRecipeFieldInvalid)
+            if ((checkError = RecipeControl.CheckFieldCreate(instruction, "instruction")).code == errorCodes.recipes.invalidField)
                 return (res.status(400).send(checkError));
             checkError = RecipeControl.CheckPicture(picture);
             if (!(checkError.code == 0 || checkError.code == undefined))
@@ -186,15 +186,15 @@ router.put('/:id', function (req, res) {
                 var db = req.db;
                 var idRecipe = req.params.id;
                 if (!CheckBson.test(idRecipe))
-                    return (res.status(404).send({request: "error", code: CodeError.CodeRecipeEditNotFound, message: "Recipe could not be found."}));
+                    return (res.status(404).send({request: "error", code: errorCodes.recipes.editNotFound, message: "Recipe could not be found."}));
                 db.collection("recipes", function(err_collection, recipes_collection){
                    if (err_collection)
-                       return (res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"}));
+                       return (res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"}));
                    recipes_collection.findOne({_id: BSON.ObjectID(idRecipe)}, function(err_find, recipe_found){
                       if (err_find)
-                          return (res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"}));
+                          return (res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"}));
                       else if (recipe_found == null)
-                          return (res.status(404).send({request: "error", code: CodeError.CodeRecipeEditNotFound, message: "Recipe could not be found."}));
+                          return (res.status(404).send({request: "error", code: errorCodes.recipes.editNotFound, message: "Recipe could not be found."}));
                       else
                       {
                           var update_recipe = {};
@@ -218,15 +218,15 @@ router.put('/:id', function (req, res) {
                               fs.rename(picture.path, new_picture_url, function (err_rename)
                               {
                                   if (err_rename)
-                                      return (res.status(CodeError.StatusPermissionFile).send({request: "error", code: CodeError.CodePermissionFile, message: "Can't save the file"}));
+                                      return (res.status(errorCodes.undetermined.statusPermissionFile).send({request: "error", code: errorCodes.undetermined.codePermissionFile, message: "Can't save the file"}));
                               });
                               update_recipe.picture = new_picture_url;
                           }
                           recipes_collection.update({ _id : recipe_found._id }, { $set : update_recipe }, function(err_update, recipe_updated) {
                               if (err_update)
-                                  res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                                  res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
                               else if (recipe_updated != 1)
-                                  res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                                  res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
                               else
                               {
                                   var new_recipe_updated = {};
@@ -255,22 +255,22 @@ router.delete('/:id', function (req, res) {
         var db = req.db;
         db.collection('recipes', function(err_collection, recipes_collection) {
             if (err_collection)
-                res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
             else
             {
                 var idRecipe = req.params.id;
                 recipes_collection.findOne({ _id : BSON.ObjectID(idRecipe)}, function (err_find, recipe_found) {
                     if (err_find)
-                        res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                        res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
                     if (recipe_found === null)
-                        res.status(404).send({ request: "error", code: CodeError.CodeRecipeRemoveNotFound, info: "Recipe could not be found." });
+                        res.status(404).send({ request: "error", code: errorCodes.recipes.removeNotFound, info: "Recipe could not be found." });
                     else
                     {
                         recipes_collection.remove({ _id : recipe_found._id}, function(err_del, res_del){
                             if (err_del)
-                                res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                                res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
                             else if (res_del != 1)
-                                res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                                res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
                             else
                             {
                                 if (typeof recipe_found.picture == "string")

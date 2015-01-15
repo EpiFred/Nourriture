@@ -5,7 +5,7 @@
 var express = require('express');
 var router = express.Router();
 var formidable = require('formidable');
-var CodeError = require('../lib/error_code.js');
+var errorCodes = require('../lib/error_code.js');
 var Auth = require('../lib/auth_control.js');
 var SearchControl = require('../lib/search_control.js');
 // ===============================================================================================================================================
@@ -34,19 +34,19 @@ router.post('/', function (req, res) {
                     else
                         return (res.status(400).send({
                             request: "error",
-                            code: CodeError.CodeFoodFieldInvalid,
+                            code: errorCodes.food.invalidField,
                             message: "The field 'type' is invalid. Not the format of a JSON. Ex:[{\"type\":\"foods\"}]"
                         }));
                     } catch(e) {
                         return (res.status(400).send({
                             request: "error",
-                            code: CodeError.CodeFoodFieldInvalid,
+                            code: errorCodes.food.invalidField,
                             message: "The field 'type' is invalid. Not the format of a JSON. Ex:[{\"type\":\"foods\"}]"
                         }));
                     }
                 }
                 else
-                    return (res.status(400).send({request: "error", code: CodeError.CodeSearchFieldInvalid, message: "The field 'type' is invalid. Ex:[{\"type\":\"foods\"}]"}));
+                    return (res.status(400).send({request: "error", code: errorCodes.search.invalidField, message: "The field 'type' is invalid. Ex:[{\"type\":\"foods\"}]"}));
             else
                 return (SearchControl.SearchAll(searching, req, res));
 

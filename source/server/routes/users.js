@@ -4,7 +4,7 @@ var formidable = require('formidable');
 var md5 = require('MD5');
 var fs = require('fs');
 var UserControl = require('../lib/users_control.js');
-var CodeError = require('../lib/error_code.js');
+var errorCodes = require('../lib/error_code.js');
 var Auth = require('../lib/auth_control.js');
 // ====================================================================================================================================
 var CheckBson = /^[0-9a-fA-F]{24}$/;
@@ -49,14 +49,14 @@ router.post('/login', function(req, res) {
         var db = req.db;
         db.collection("user", function (err_collection, user_collection) {
             if (err_collection)
-                res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
             else {
                 user_collection.findOne({pseudo: login, password: pw}, function (err_find, find_res) {
                     console.log(login + " - " + pw);
                     if (err_find)
-                        res.status(CodeError.StatusDB).send({code: CodeError.CodeDB, info: "DB Error"});
+                        res.status(errorCodes.api.statusDB).send({code: errorCodes.api.statusDB, info: "DB Error"});
                     else if (find_res == null)
-                        res.status(200).send({request: "error", code: CodeError.CodeBadLogin, info: "Invalid credentials."});
+                        res.status(200).send({request: "error", code: errorCodes.user.badLogin, info: "Invalid credentials."});
                     else {
                         var date = new Date;
                         var token = md5(Math.floor(date.getTime()));
@@ -66,9 +66,9 @@ router.post('/login', function(req, res) {
 
                         user_collection.update( {_id : find_res._id}, { $set: {auth_token:token}} , function(err_update, field_updated) {
                             if (err_update)
-                                res.status(CodeError.StatusDB).send({code: CodeError.CodeDB, info: "DB Error"});
+                                res.status(errorCodes.api.statusDB).send({code: errorCodes.undetermined.codeDB, info: "DB Error"});
                             else if (field_updated === null)
-                                res.status(CodeError.StatusDB).send({code: CodeError.CodeDB, info: "DB Error"});
+                                res.status(errorCodes.api.statusDB).send({code: errorCodes.undetermined.codeDB, info: "DB Error"});
                             else
                                 res.status(201).send({request: "success", token: token, user: find_res});
                         });
@@ -90,14 +90,14 @@ router.get('/:id', function(req, res) {
         var idUser = req.params.id;
         var token = req.query.t;
         if (!(CheckBson.test(idUser)))
-            res.status(404).send({request: "error", code: CodeError.CodeUserIdNotFound,info: "User could not be found."});
+            res.status(404).send({request: "error", code: errorCodes.user.idNotFound,info: "User could not be found."});
         var db = req.db;
         db.collection('user').findById(idUser, function (error, account_res)
         {
             if (error)
-                res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
             if (account_res === null)
-                res.status(404).send({ request: "error", code: CodeError.CodeUserIdNotFound, info: "User could not be found." });
+                res.status(404).send({ request: "error", code: errorCodes.user.idNotFound, info: "User could not be found." });
             else
             if (account_res.auth_token === token)
                 res.status(200).send({request: "success", user: account_res});
@@ -140,26 +140,26 @@ router.post('/', function(req, res) {
         if ((checkError = UserControl.CheckName(ln, "lastname")).code != 0)
             return (res.status(400).send(checkError));
         checkError = UserControl.CheckPicture(avatar);
-        if (!(checkError.code == 0 || checkError.code == CodeError.CodeFoodFieldMissing))
+        if (!(checkError.code == 0 || checkError.code == errorCodes.user.missingField))
             return (res.status(400).send(checkError));
 
         var db = req.db;
         db.collection("user", function (err_collection, user_collection)
         {
             if (err_collection)
-                res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
             else
             {
                 user_collection.findOne({ $or: [{pseudo: login},{email: email}]}, function(err_find, find_res)
                 {
                     if (err_find)
-                        res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                        res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
                     else if (find_res != null)
                     {
                         if (find_res.pseudo == login)
-                            res.status(200).send({request: "error", code: CodeError.CodeUserAlreadyExist, info: "Pseudo '" + login + "' is already used by another user"});
+                            res.status(200).send({request: "error", code: errorCodes.user.alreadyExist, info: "Pseudo '" + login + "' is already used by another user"});
                         else if (find_res.email == email)
-                            res.status(200).send({request: "error", code: CodeError.CodeUserAlreadyExist, info: "Email address '" + email + "' is already used by another user"});
+                            res.status(200).send({request: "error", code: errorCodes.user.alreadyExist, info: "Email address '" + email + "' is already used by another user"});
                     }
                     else
                     {
@@ -167,9 +167,9 @@ router.post('/', function(req, res) {
                         user_collection.insert(new_user, function(err_insert, insert_res)
                         {
                             if (err_insert)
-                                res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                                res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
                             else if (insert_res == null)
-                                res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                                res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
                             else
                             {
                                 var micro_update_user = {};
@@ -179,7 +179,7 @@ router.post('/', function(req, res) {
                                     fs.rename(avatar.path, new_picture_url, function (err_rename)
                                     {
                                         if (err_rename)
-                                            return (res.status(CodeError.StatusPermissionFile).send({request: "error", code: CodeError.CodePermissionFile, message: "Can't save the file"}));
+                                            return (res.status(errorCodes.undetermined.statusPermissionFile).send({request: "error", code: errorCodes.undetermined.codePermissionFile, message: "Can't save the file"}));
                                     });
                                     micro_update_user.avatar = new_picture_url;
                                 }
@@ -190,9 +190,9 @@ router.post('/', function(req, res) {
                                 user_collection.update({_id: insert_res[0]._id}, {$set: micro_update_user}, function (err_update, field_updated)
                                 {
                                     if (err_update)
-                                        res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error" + err_update});
+                                        res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error" + err_update});
                                     else if (field_updated === null)
-                                        res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                                        res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
                                     else
                                         res.status(201).send({request: "success", token: token, user: insert_res[0]});
                                 });
@@ -217,7 +217,7 @@ router.put('/', function(req, res) {
     form.parse(req, function (error, formInfos, files)
     {
         if (Object.keys(formInfos).length == 0 && Object.keys(files).length == 0)
-            return (res.status(400).send({request: "error", code: CodeError.CodeUserEditNothing, message: "Nothing to update."}));
+            return (res.status(400).send({request: "error", code: errorCodes.user.editNothing, message: "Nothing to update."}));
         var pw = formInfos.password;
         var npw = formInfos.new_password;
         var fn = formInfos.firstname;
@@ -226,22 +226,22 @@ router.put('/', function(req, res) {
         var favorites = formInfos.favorites;
         var avatar = files.avatar;
 
-        if ((checkError = UserControl.CheckPassword(pw)).code == CodeError.CodeUserFieldInvalid)
+        if ((checkError = UserControl.CheckPassword(pw)).code == errorCodes.user.invalidField)
             return (res.status(400).send(checkError));
-        if ((checkError = UserControl.CheckPassword(npw)).code == CodeError.CodeUserFieldInvalid)
+        if ((checkError = UserControl.CheckPassword(npw)).code == errorCodes.user.invalidField)
             return (res.status(400).send(checkError));
-        if ((checkError = UserControl.CheckMail(email)).code == CodeError.CodeUserFieldInvalid)
+        if ((checkError = UserControl.CheckMail(email)).code == errorCodes.user.invalidField)
             return (res.status(400).send(checkError));
-        if ((checkError = UserControl.CheckName(fn, "firstname")).code == CodeError.CodeUserFieldInvalid)
+        if ((checkError = UserControl.CheckName(fn, "firstname")).code == errorCodes.user.invalidField)
             return (res.status(400).send(checkError));
-        if ((checkError = UserControl.CheckName(ln, "lastname")).code == CodeError.CodeUserFieldInvalid)
+        if ((checkError = UserControl.CheckName(ln, "lastname")).code == errorCodes.user.invalidField)
             return (res.status(400).send(checkError));
         checkError = UserControl.CheckPicture(avatar);
-        if (!(checkError.code == 0 || checkError.code == CodeError.CodeFoodFieldMissing))
+        if (!(checkError.code == 0 || checkError.code == errorCodes.food.missingField))
             return (res.status(400).send(checkError));
 
         if ((pw == undefined && npw != undefined) || (pw != undefined && npw == undefined))
-            return (res.status(400).send({request: "error", code: CodeError.CodeEditPassword, info: "Please set the 'password' and the 'new_password' or none of them"}));
+            return (res.status(400).send({request: "error", code: errorCodes.user.editPassword, info: "Please set the 'password' and the 'new_password' or none of them"}));
 
         Auth.CheckAuth(req, res, function()
         {
@@ -249,15 +249,15 @@ router.put('/', function(req, res) {
             var token = req.query.t;
             db.collection('user', function(err_collection, user_collection) {
                 if (err_collection)
-                    res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                    res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
                 else
                 {
                     user_collection.findOne({auth_token: token} , function (error, account_res)
                     {
                         if (error)
-                            res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                            res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
                         if (account_res === null)
-                            res.status(404).send({ request: "error", code: CodeError.CodeUserIdNotFound, info: "User could not be found." });
+                            res.status(404).send({ request: "error", code: errorCodes.user.idNotFound, info: "User could not be found." });
                         else
                         {
                             var update_user = {};
@@ -265,9 +265,9 @@ router.put('/', function(req, res) {
                             {
                                 user_collection.findOne({auth_token: token, password: pw}, function (err_find, find_res) {
                                     if (err_find)
-                                        return (res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"}));
+                                        return (res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"}));
                                     else if (find_res === null)
-                                        return (res.status(200).send({request: "error", code: CodeError.CodeBadPasswordEdit, info: "The password is incorrect."}));
+                                        return (res.status(200).send({request: "error", code: errorCodes.user.badPasswordEdit, info: "The password is incorrect."}));
                                     else
                                         update_user.password = npw;
                                 });
@@ -277,9 +277,9 @@ router.put('/', function(req, res) {
                                 user_collection.findOne({auth_token: token, email : email}, function(err_findemail, email_res)
                                 {
                                     if(err_findemail)
-                                        res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                                        res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
                                     else if (email_res != null)
-                                        res.status(200).send({request: "error", code: CodeError.CodeEmailAlreadyUsed, info: "Email address '" + email + "' is already used by another user"});
+                                        res.status(200).send({request: "error", code: errorCodes.user.emailAlreadyUsed, info: "Email address '" + email + "' is already used by another user"});
                                 });
                                 update_user.email = email;
                             }
@@ -297,16 +297,16 @@ router.put('/', function(req, res) {
                                 fs.rename(avatar.path, new_picture_url, function (err_rename)
                                 {
                                     if (err_rename)
-                                        return (res.status(CodeError.StatusPermissionFile).send({request: "error", code: CodeError.CodePermissionFile, message: "Can't save the file"}));
+                                        return (res.status(errorCodes.undetermined.statusPermissionFile).send({request: "error", code: errorCodes.undetermined.codePermissionFile, message: "Can't save the file"}));
                                 });
                                 update_user.avatar = new_picture_url;
                             }
                             user_collection.update({ _id : account_res._id }, { $set : update_user }, function(err_update, user_updated)
                             {
                                 if (err_update)
-                                    res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                                    res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
                                 else if (user_updated != 1)
-                                    res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                                    res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
                                 else
                                 {
                                     var new_user_updated = {};
@@ -338,22 +338,22 @@ router.delete('/', function(req, res) {
         db.collection('user', function(err_collection, user_collection)
         {
             if (err_collection)
-                res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
             else
             {                user_collection.findOne({ auth_token : token}, function (error, account_res)
             {
                 if (error)
-                    res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                    res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
                 if (account_res === null)
-                    res.status(404).send({ request: "error", code: CodeError.CodeUserIdNotFound, info: "User could not be found." });
+                    res.status(404).send({ request: "error", code: errorCodes.user.idNotFound, info: "User could not be found." });
                 else
                 {
                     user_collection.remove({ _id : account_res._id }, function(err_del, res_del)
                     {
                         if (err_del)
-                            res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                            res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
                         else if (res_del != 1)
-                            res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                            res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
                         else
                         {
                             if (typeof account_res.avatar == "string")
@@ -385,9 +385,9 @@ router.post('/favorite', function(req, res){
                 var recipeId = fields.recipe_id;
 
                 if (typeof recipeId === "undefined")
-                    res.status(400).json({"request": "error", "code": CodeError.CodeUserFieldMissing, "message": "The field 'recipe_id' is mandatory and has not been specified."});
+                    res.status(400).json({"request": "error", "code": errorCodes.user.missingField, "message": "The field 'recipe_id' is mandatory and has not been specified."});
                 else if (recipeId === null || (/^\s*$/).test(recipeId))
-                    res.status(400).json({"request": "error", "code": CodeError.CodeUserFieldInvalid, "message": "The field 'recipe_id' is invalid."});
+                    res.status(400).json({"request": "error", "code": errorCodes.user.invalidField, "message": "The field 'recipe_id' is invalid."});
                 else {
 
                     // Validate recipe existence
@@ -397,7 +397,7 @@ router.post('/favorite', function(req, res){
                             res.status(500).json({"request": "error"});
                         }
                         else if (!recipe)
-                            res.status(200).json({"request": "error", "code": 211, "message": "Recipe could not be found."});
+                            res.status(200).json({"request": "error", "code": errorCodes.user.recipeNotFound, "message": "Recipe could not be found."});
                         else {
 
                             // Check for duplicate
@@ -409,7 +409,7 @@ router.post('/favorite', function(req, res){
                                 else if (users.length == 0)
                                     res.status(500).json({"request": "error"});
                                 else if (users[0].favorites.indexOf(recipeId) > -1)
-                                    res.status(400).json({"request": "error", "code": 212, "message": "Recipe is already in favorites."});
+                                    res.status(400).json({"request": "error", "code": errorCodes.user.recipeAlreadyInFavorites, "message": "Recipe is already in favorites."});
                                 else {
 
                                     // Update favorites
@@ -455,14 +455,14 @@ router.delete('/favorite/:id', function(req, res) {
                 if (typeof user.favorites === "undefined" ||
                     user.favorites === null ||
                     user.favorites.length == 0)
-                    res.status(400).json({"request": "error", "code": 211, "message": "Favorite could not be found."});
+                    res.status(400).json({"request": "error", "code": errorCodes.user.recipeNotFound, "message": "Favorite could not be found."});
                 else {
 
                     // Remove favorite
                     var index = user.favorites.indexOf(favoriteId);
 
                     if (index == -1)
-                        res.status(400).json({"request": "error", "code": 211, "message": "Favorite could not be found."});
+                        res.status(400).json({"request": "error", "code": errorCodes.user.recipeNotFound, "message": "Favorite could not be found."});
                     else {
                         user.favorites.splice(index, 1);
 
