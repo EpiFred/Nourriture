@@ -20,7 +20,11 @@ var CheckBson = /^[0-9a-fA-F]{24}$/;
 router.get('/list', function(req, res) {
     var db = req.db;
     db.collection('recipes').find().toArray(function (err, items) {
-        res.json(items);
+        if (err) {
+            console.log("Error while retrieving recipe list: " + err);
+            res.status(500).json({"request": "error"});
+        }
+        res.json({"request": "success", "recipes": items});
     });
 });
 // ====================================================================================================================================

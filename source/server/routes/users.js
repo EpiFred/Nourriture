@@ -13,8 +13,12 @@ var CheckBson = /^[0-9a-fA-F]{24}$/;
 // ====================================================================================================================================
 router.get('/list', function(req, res) {
     var db = req.db;
-    db.collection('user').find().toArray(function (err, items) {
-        res.json(items);
+    db.collection('user').find({}, {auth_token: false}).toArray(function (err, items) {
+        if (err) {
+            console.log("Error while retrieving user list: " + err);
+            res.status(500).json({"request": "error"});
+        }
+        res.json({"request": "success", "users": items});
     });
 });
 
@@ -80,8 +84,7 @@ router.post('/login', function(req, res) {
  *  Code:
  *      0 : Authentication OK
  */
-router.get('/:id', function(req, res)
-{
+router.get('/:id', function(req, res) {
     Auth.CheckAuth(req, res, function()
     {
         var idUser = req.params.id;
@@ -96,14 +99,14 @@ router.get('/:id', function(req, res)
             if (account_res === null)
                 res.status(404).send({ request: "error", code: CodeError.CodeUserIdNotFound, info: "User could not be found." });
             else
-                if (account_res.auth_token === token)
-                    res.status(201).send({request: "success", user: account_res});
-                else
-                {
-                    delete account_res.auth_token;
-                    delete account_res.password;
-                    res.status(201).send({request: "success", user: account_res});
-                }
+            if (account_res.auth_token === token)
+                res.status(201).send({request: "success", user: account_res});
+            else
+            {
+                delete account_res.auth_token;
+                delete account_res.password;
+                res.status(201).send({request: "success", user: account_res});
+            }
         });
     });
 });
@@ -113,8 +116,7 @@ router.get('/:id', function(req, res)
  *  Code:
  *      0 : Authentication OK
  */
-router.post('/', function(req, res)
-{
+router.post('/', function(req, res) {
     var form = new formidable.IncomingForm();
     var checkError;
 
@@ -208,8 +210,7 @@ router.post('/', function(req, res)
  *  Code:
  *      0 : Authentication OK
  */
-router.put('/', function(req, res)
-{
+router.put('/', function(req, res) {
     var form = new formidable.IncomingForm();
     var checkError;
 
@@ -275,10 +276,10 @@ router.put('/', function(req, res)
                             {
                                 user_collection.findOne({auth_token: token, email : email}, function(err_findemail, email_res)
                                 {
-                                   if(err_findemail)
-                                       res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
-                                   else if (email_res != null)
-                                       res.status(200).send({request: "error", code: CodeError.CodeEmailAlreadyUsed, info: "Email address '" + email + "' is already used by another user"});
+                                    if(err_findemail)
+                                        res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                                    else if (email_res != null)
+                                        res.status(200).send({request: "error", code: CodeError.CodeEmailAlreadyUsed, info: "Email address '" + email + "' is already used by another user"});
                                 });
                                 update_user.email = email;
                             }
@@ -302,19 +303,19 @@ router.put('/', function(req, res)
                             }
                             user_collection.update({ _id : account_res._id }, { $set : update_user }, function(err_update, user_updated)
                             {
-                               if (err_update)
-                                   res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
-                               else if (user_updated != 1)
-                                   res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
-                               else
-                               {
-                                   var new_user_updated = {};
-                                   for (var _old in account_res)
-                                       new_user_updated[_old] = account_res[_old];
-                                   for (var _new in update_user)
-                                       new_user_updated[_new] = update_user[_new];
-                                   res.status(201).send({request: "success", user: new_user_updated});
-                               }
+                                if (err_update)
+                                    res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                                else if (user_updated != 1)
+                                    res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                                else
+                                {
+                                    var new_user_updated = {};
+                                    for (var _old in account_res)
+                                        new_user_updated[_old] = account_res[_old];
+                                    for (var _new in update_user)
+                                        new_user_updated[_new] = update_user[_new];
+                                    res.status(201).send({request: "success", user: new_user_updated});
+                                }
                             });
                         }
                     });
@@ -329,8 +330,7 @@ router.put('/', function(req, res)
  *  Code:
  *      0 : Authentication OK
  */
-router.delete('/', function(req, res)
-{
+router.delete('/', function(req, res) {
     Auth.CheckAuth(req, res, function()
     {
         var db = req.db;
@@ -341,28 +341,122 @@ router.delete('/', function(req, res)
                 res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
             else
             {                user_collection.findOne({ auth_token : token}, function (error, account_res)
+            {
+                if (error)
+                    res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                if (account_res === null)
+                    res.status(404).send({ request: "error", code: CodeError.CodeUserIdNotFound, info: "User could not be found." });
+                else
                 {
-                    if (error)
-                        res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
-                    if (account_res === null)
-                        res.status(404).send({ request: "error", code: CodeError.CodeUserIdNotFound, info: "User could not be found." });
-                    else
+                    user_collection.remove({ _id : account_res._id }, function(err_del, res_del)
                     {
-                        user_collection.remove({ _id : account_res._id }, function(err_del, res_del)
+                        if (err_del)
+                            res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                        else if (res_del != 1)
+                            res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
+                        else
                         {
-                            if (err_del)
-                               res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
-                            else if (res_del != 1)
-                               res.status(CodeError.StatusDB).send({request:"error", code: CodeError.CodeDB, info: "DB Error"});
-                            else
-                            {
-                                if (typeof account_res.avatar == "string")
-                                    fs.unlink(account_res.avatar);
-                                res.status(200).send({request: "success", message: "deleted"});
-                            }
-                        });
-                    }
-                });
+                            if (typeof account_res.avatar == "string")
+                                fs.unlink(account_res.avatar);
+                            res.status(200).send({request: "success", message: "deleted"});
+                        }
+                    });
+                }
+            });
+            }
+        });
+    });
+});
+
+router.post('/favorite', function(req, res){
+    Auth.CheckAuth(req, res, function(){
+        var token = req.query.t;
+        var db = req.db;
+        var form = new formidable.IncomingForm();
+
+        form.parse(req, function(err, fields, files) {
+            if (err) {
+                console.log("Formidable form parse error: " + err);
+                res.status(500).json({"request": "error"});
+            }
+            else {
+
+                // Validate request
+                var recipeId = fields.recipe_id;
+
+                if (typeof recipeId === "undefined")
+                    res.status(400).json({"request": "error", "code": CodeError.CodeUserFieldMissing, "message": "The field 'recipe_id' is mandatory and has not been specified."});
+                else if (recipeId === null || (/^\s*$/).test(recipeId))
+                    res.status(400).json({"request": "error", "code": CodeError.CodeUserFieldInvalid, "message": "The field 'recipe_id' is invalid."});
+                else {
+
+                    // Validate recipe existence
+                    db.collection("recipes").findById(recipeId, function (err, recipe) {
+                        if (err) {
+                            console.log(err);
+                            res.status(500).json({"request": "error"});
+                        }
+                        else if (!recipe)
+                            res.status(200).json({"request": "error", "code": 211, "message": "Recipe could not be found."});
+                        else {
+
+                            // Check for duplicate
+                            db.collection("user").find({auth_token: token}, {}).toArray(function(err, users) {
+                                if (err) {
+                                    console.log("Error while searching user: " + err);
+                                    res.status(500).json({"request": "error"});
+                                }
+                                else if (users.length == 0)
+                                    res.status(500).json({"request": "error"});
+                                else if (users[0].favorites.indexOf(recipeId) > -1)
+                                    res.status(400).json({"request": "error", "code": 4, "message": "Recipe is already in favorites."});
+                                else {
+
+                                    // Update favorites
+                                    db.collection("user").update({auth_token: token}, {$push: {favorites: recipeId}}, function(err, count, status) {
+                                        if (err) {
+                                            console.log("Favorites update error: " + err);
+                                            res.status(500).json({"request": "error"});
+                                        }
+                                        else if (count == 0)
+                                            res.status(500).json({"request": "error"});
+                                        else
+                                            res.status(200).json({"request": "success"});
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    });
+});
+
+router.delete('/favorite/:id', function(req, res) {
+    Auth.CheckAuth(req, res, function() {
+        var token = req.query.t;
+        var db = req.db;
+        var favoriteId = req.params.id;
+
+        // Retrieving user
+        db.collection("user").find({auth_token: token}, {}).toArray(function(err, users) {
+            if (err) {
+                console.log("Error while searching user: " + err);
+                res.status(500).json({"request": "error"});
+            }
+            else if (users.length == 0)
+                res.status(500).json({"request": "error"});
+            else {
+
+                // Checking favorite
+                if (users.favorites.indexOf(favoriteId) > -1) {
+                    res.end();
+                    //users.favorites.slice();
+                }
+                else {
+                    res.status(400).json({"request": "error", "code": 4, "message": "Favorite could not be found."});
+                }
             }
         });
     });
