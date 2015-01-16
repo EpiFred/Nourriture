@@ -17,6 +17,7 @@ var comsumer_secret_key = "b41d9b7ec41f431085912807c6007d73";
 var fatSecretRestUrl = 'http://platform.fatsecret.com/rest/server.api';
 var date = new Date;
 
+var recipeReady = [];
 // ================================================================================================================================================================================
 function GetRecipesList(format, max_result, searching, next)
 {
@@ -127,7 +128,7 @@ function GetFoodID(format, id, next)
     var secret_key = comsumer_secret_key;
     var reqObj = {
         food_id: id,
-        format: "json",
+        format: format,
         method: "food.get",
         oauth_consumer_key: consumer_public_key,
         oauth_nonce: Math.random().toString(36).replace(/[^a-z]/, '').substr(2),
@@ -157,84 +158,131 @@ function GetFoodID(format, id, next)
     });
 }
 
-function RecipeExist(recipe, req, res)
+function RecipeReadyToAdd(req, res)
+{
+    if (recipeReady.length == 0)
+        return (res.send("Nothing to add ! "));
+
+    // Clear doublon
+    var arr = {};
+    for ( var i=0; i < recipeReady.length; i++ )
+        arr[recipeReady[i]['name']] = recipeReady[i];
+    recipeReady = [];
+    for ( var key in arr )
+        recipeReady.push(arr[key]);
+
+    var db = req.db;
+    for (var j = 0; j < recipeReady.length; j++)
+    {
+        db.collection("recipes", function(err_collection, recipes_collection)
+        {
+           if (!err_collection && recipes_collection != null)
+           {
+               (function(j)
+               {
+                   recipes_collection.findOne({name: recipeReady[j].name}, function (err_find, founded)
+                   {
+                       if (!err_find && founded == null)
+                       {
+                           var list_to_find = [];
+                           var list_desc_ingr = [];
+                           for (var k = 0; k < recipeReady[j].foods.length; k++) {
+                               var tmpFood = recipeReady[j].foods[k];
+                               list_to_find[k] = {name: tmpFood.name};
+                               list_desc_ingr[(tmpFood.name)] =  tmpFood.detail;
+                           }
+                           (function (j)
+                           {
+                               db.collection("food").find({$or: list_to_find}, function(err_find, listFound)
+                               {
+                                   if (!err_find && listFound != null)
+                                   {
+                                       listFound.toArray(function(err,items)
+                                       {
+                                           var ingredient_list = [];
+                                           for (var i = 0; i < items.length; i++)
+                                               ingredient_list[i] = { id: items[i]._id, name: items[i].name, detail:  list_desc_ingr[items[i].name]};
+                                           recipeReady[j].foods = ingredient_list;
+                                           recipes_collection.insert(recipeReady[j], function(a,b){});
+                                       });
+                                   }
+                               });
+                           }(j));
+                       } else if (founded != null)
+                            recipeReady.splice(j, 1);
+                   });
+               }(j));
+           }
+        });
+    }
+    res.send("Adding recipes...");
+}
+
+function AddOneRecipe(recipe, req, res)
 {
     var db = req.db;
     db.collection("recipes", function (err_collection, recipes_collection)
     {
-       if (!err_collection && recipes_collection != null)
-       {
-           recipes_collection.findOne({name: recipe.recipe_name}, function(err_find, founded)
-           {
-              if (!err_find && founded == null)
-              {
-                  GetRecipesID("json", recipe.recipe_id, function(fsRes) {
-                      if (fsRes == undefined && fsRes.recipe == undefined)
-                          return ;
-                      var fsRecipe = fsRes.recipe;
-                      if (fsRecipe == undefined)
-                          return;
-                      var images = "";
-                      if (fsRecipe.recipe_images)
-                          images = fsRecipe.recipe_images;
-                      else
-                          images = "";
-                      var new_recipe = {
-                          name: fsRecipe.recipe_name,
-                          description: fsRecipe.recipe_description,
-                          picture: images.recipe_image,
-                          make_time: fsRecipe.preparation_time_min,
-                          cooking_time: fsRecipe.cooking_time_min
-                          };
+        if (!err_collection && recipes_collection != null)
+        {
+            recipes_collection.findOne({name: recipe.recipe_name}, function(err_find, founded)
+            {
+                if (!err_find && founded == null)
+                {
+                    GetRecipesID("json", recipe.recipe_id, function(fsRes) {
+                        if (fsRes == undefined && fsRes.recipe == undefined)
+                            return ;
+                        var fsRecipe = fsRes.recipe;
+                        if (fsRecipe == undefined)
+                            return;
+                        var images = "";
+                        if (fsRecipe.recipe_images)
+                            images = fsRecipe.recipe_images;
+                        else
+                            images = "";
+                        var new_recipe = {
+                            name: fsRecipe.recipe_name,
+                            description: fsRecipe.recipe_description,
+                            picture: images.recipe_image,
+                            make_time: fsRecipe.preparation_time_min,
+                            cooking_time: fsRecipe.cooking_time_min
+                        };
 
-                      if (fsRecipe.preparation_time_min == undefined)
-                          new_recipe.make_time = 0;
-                      if (fsRecipe.cooking_time_min == undefined)
-                          new_recipe.cooking_time = 0;
+                        if (fsRecipe.preparation_time_min == undefined)
+                            new_recipe.make_time = 0;
+                        if (fsRecipe.cooking_time_min == undefined)
+                            new_recipe.cooking_time = 0;
 
-                      var direction = fsRecipe.directions.direction;
-                      var new_instruction = "";
-                      for (var i = 0; i < direction.length; i++)
-                          new_instruction += direction[i].direction_number + " - " + direction[i].direction_description + "<br>";
-                      new_recipe.instruction = new_instruction;
-                      var ingredient = fsRecipe.ingredients.ingredient;
-                      var list_to_find = [];
-                      var list_desc_ingr = [];
-                      for (var j = 0; j < ingredient.length; j++)
-                      {
-                          //console.log("==> " + ingredient[j].food_name);
-                          list_to_find[j] = { name: ingredient[j].food_name};
-                          list_desc_ingr[(ingredient[j].food_name)] =  ingredient[j].ingredient_description;
-                          FoodExist(ingredient[j], req, res);
-                      }
+                        var direction = fsRecipe.directions.direction;
+                        var new_instruction = "";
+                        for (var i = 0; i < direction.length; i++)
+                            new_instruction += direction[i].direction_number + " - " + direction[i].direction_description + "; ";
+                        new_recipe.instruction = new_instruction;
 
-                      //console.log("----> liste d'ingredient de " + fsRecipe.recipe_name);
-                      //console.log(list_to_find);
+                        var ingredient = fsRecipe.ingredients.ingredient;
+                        var list_to_find = [];
+                        var list_desc_ingr = [];
+                        for (var j = 0; j < ingredient.length; j++)
+                        {
+                            list_to_find[j] = { name: ingredient[j].food_name };
+                            list_desc_ingr[(ingredient[j].food_name)] =  ingredient[j].ingredient_description;
+                            FoodExist(ingredient[j], req, res);
+                        }
 
-                      //var stop = new Date().getTime();
-                      //while(new Date().getTime() < stop + 10000);
+                        var ingredient_list = [];
+                        for (var i = 0; i < list_to_find.length; i++)
+                            ingredient_list[i] = {  name: list_to_find[i].name, detail: list_desc_ingr[list_to_find[i].name]};
+                        new_recipe.foods = ingredient_list;
 
-                      db.collection("food").find({$or: list_to_find}, function(err_find, listFound)
-                      {
-                          if (!err_find && listFound != null)
-                          {
-                              listFound.toArray(function(err,items)
-                              {
-                                  var ingredient_list = [];
-                                  for (var i = 0; i < items.length; i++)
-                                      ingredient_list[i] = { id: items[i]._id, name: items[i].name, detail: list_desc_ingr[items[i].name]};
-                                  new_recipe.foods = ingredient_list;
-                                  // @TODO - Save la list des recipes a inserer et faire dans un autre endpoint
-                                  recipes_collection.insert(new_recipe, function(a,b){});
-                                  //res.send(new_recipe);
-                              });
-                          }
-                          res.send("ok");
-                      });
-                  });
-              }
-           });
-       }
+                        recipeReady[recipeReady.length] = new_recipe;
+
+                        res.send("'" + new_recipe.name + "' is ready to be add, plz use /fsApi/addRecipeReady");
+                    });
+                }
+                else
+                    res.send("'" + recipe.recipe_name + "' already in the db");
+            });
+        }
     });
 }
 
@@ -276,20 +324,6 @@ router.get('/', function(req, res) {
     res.send("OK");
 });
 
-router.get('/cleanRecipes', function(req, res){
-   var db = req.db;
-   db.collection("recipes", function(err_col, rcol)
-   {
-       if (!err_col && rcol != null)
-       {
-           rcol.remove({foods: []}, function(err_r, removed)
-           {
-              res.send(removed);
-           });
-       }
-   });
-});
-
 router.get('/foodID/:id', function(req, res){
    GetFoodID("json", req.params.id, function (food){
        res.send(food);
@@ -314,19 +348,21 @@ router.get('/seekRecipe/:search', function(req, res){
     });
 });
 
-router.get('/addRecipe/:search', function(req, res){
-    GetRecipesList("json", 2, req.params.search, function(recipeslist){
-        if (recipeslist == undefined)
-            return (res.send("Nothing"));
-        var recipeArray = [];
-        if (recipeslist.recipes.total_results == 1)
-            recipeArray[0] = recipeslist.recipes.recipe;
+router.get('/OneRecipe/:search', function(req, res){
+    GetRecipesList("json", 1, req.params.search, function(recipeslist){
+        if (recipeslist != undefined && recipeslist.recipes != undefined && recipeslist.recipes.total_results != 0)
+        {
+            var newRecipe = recipeslist.recipes.recipe;
+            AddOneRecipe(newRecipe, req, res);
+        }
         else
-            recipeArray = recipeslist.recipes.recipe;
-        //console.log(recipeslist.recipes.recipe);
-        for (var i = 0; i < recipeArray.length; i++)
-            RecipeExist(recipeArray[i], req, res);
+            return (res.send("Nothing"));
     });
+});
+
+router.get('/addRecipeReady', function (req, res)
+{
+    RecipeReadyToAdd(req,res);
 });
 
 module.exports = router;
