@@ -33,7 +33,7 @@ router.get('/:id', function (req, res) {
         var db = req.db;
         db.collection('food').findById(idFood, function (err_collection, food_res) {
             if (err_collection)
-                res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
+                res.status(500).json({"request": "error"});
             else if (food_res == null)
                 res.status(404).send({request: "error", code: errorCodes.food.getNotFound, info: "Food could not be found."});
             else
@@ -57,11 +57,15 @@ router.post('/', function (req, res) {
             var picture = files.picture;
             var nutritional_values = formInfos.nutritional_values;
 
-            if (nutritional_values != undefined)
-                if (/^[\],:{}\s]*$/.test(nutritional_values.replace(/\\["\\\/bfnrtu]/g, '@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').replace(/(?:^|:|,)(?:\s*\[)+/g, '')))
-                    nutritional_values = JSON.parse(formInfos.nutritional_values);
-                else
-                    return (res.status(400).send({request: "error", code: errorCodes.food.invalidField, message: "The field 'nutritional_values' is invalid. Not the format of a JSON"}));
+            try {
+                if (nutritional_values != undefined)
+                    if (/^[\],:{}\s]*$/.test(nutritional_values.replace(/\\["\\\/bfnrtu]/g, '@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').replace(/(?:^|:|,)(?:\s*\[)+/g, '')))
+                        nutritional_values = JSON.parse(formInfos.nutritional_values);
+                    else
+                        return (res.status(400).send({request: "error", code: errorCodes.food.invalidField, message: "The field 'nutritional_values' is invalid. Not the format of a JSON"}));
+            } catch(e) {
+                return (res.status(400).send({request: "error", code: errorCodes.food.invalidField, message: "The field 'nutritional_values' is invalid. Not the format of a JSON"}));
+            }
 
             if ((checkError = FoodControl.CheckFieldCreate(name, "name")).code != 0)
                 return (res.status(400).send(checkError));
@@ -70,19 +74,21 @@ router.post('/', function (req, res) {
 
             var db = req.db;
             db.collection("food", function(err_collection, food_collection){
-                if (err_collection)
-                    res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
-                else if (food_collection == null)
-                    res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
+                if (err_collection || food_collection == null)
+                {
+                    console.log("Error while trying to access to the food collection:" + err_collection);
+                    res.status(500).json({"request": "error"});
+                }
                 else
                 {
                     var new_food = {name: name, nutritional_values: nutritional_values};
                     food_collection.insert(new_food, function(err_insert, insert_res)
                     {
-                        if (err_insert)
-                            res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
-                        else if (insert_res == null)
-                            res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
+                        if (err_insert || insert_res == null)
+                        {
+                            console.log("Error while trying to insert an element into food collection:" + err_collection);
+                            res.status(500).json({"request": "error"});
+                        }
                         else
                         {
                             var new_picture_url = FoodControl.GetNewPictureName(picture.name, insert_res[0]._id).url;
@@ -94,10 +100,11 @@ router.post('/', function (req, res) {
                                 {
                                     food_collection.update({_id : insert_res[0]._id} , {$set : {picture : new_picture_url}}, function (err_update, update_done)
                                     {
-                                        if (err_update)
-                                            res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
-                                        else if (update_done != 1)
-                                            res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
+                                        if (err_update || update_done != 1)
+                                        {
+                                            console.log("Error while trying to update an element into food collection:" + err_collection);
+                                            res.status(500).json({"request": "error"});
+                                        }
                                         else
                                         {
                                             insert_res[0].picture = new_picture_url;
@@ -179,20 +186,7 @@ router.put('/:id', function (req, res) {
                                 updated_food.picture = new_picture_url;
                             }
                             if (nutritional_values != undefined)
-                            {
-                                // @TODO Check if the nv is a correct json
-                                var old_nv = food_found.nutritional_values;
-                                //if (/^[\],:{}\s]*$/.test(old_nv.replace(/\\["\\\/bfnrtu]/g, '@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').replace(/(?:^|:|,)(?:\s*\[)+/g, '')))
-                                //    old_nv = JSON.parse(food_found.nutritional_values);
-                                //else
-                                //    res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error - json format nv"});
-                                var new_nv = {};
-                                for (var _old in old_nv)
-                                    new_nv[_old] = old_nv[_old];
-                                for (var _obj in nutritional_values)
-                                    new_nv[_obj] = nutritional_values[_obj];
-                                updated_food.nutritional_values = new_nv;
-                            }
+                                updated_food.nutritional_values = nutritional_values;
                             food_collection.update({ _id : food_found._id }, { $set : updated_food }, function(err_update, food_updated) {
                                 if (err_update)
                                     res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});

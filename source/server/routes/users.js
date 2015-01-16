@@ -52,7 +52,7 @@ router.post('/login', function(req, res) {
                 res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
             else {
                 user_collection.findOne({pseudo: login, password: pw}, function (err_find, find_res) {
-                    console.log(login + " - " + pw);
+                    //console.log(login + " - " + pw);
                     if (err_find)
                         res.status(errorCodes.api.statusDB).send({code: errorCodes.api.statusDB, info: "DB Error"});
                     else if (find_res == null)
@@ -65,9 +65,7 @@ router.post('/login', function(req, res) {
                             delete find_res.auth_token;
 
                         user_collection.update( {_id : find_res._id}, { $set: {auth_token:token}} , function(err_update, field_updated) {
-                            if (err_update)
-                                res.status(errorCodes.api.statusDB).send({code: errorCodes.undetermined.codeDB, info: "DB Error"});
-                            else if (field_updated === null)
+                            if (err_update || field_updated === null)
                                 res.status(errorCodes.api.statusDB).send({code: errorCodes.undetermined.codeDB, info: "DB Error"});
                             else
                                 res.status(201).send({request: "success", token: token, user: find_res});
