@@ -189,6 +189,152 @@ exports.SearchRecipes = SearchRecipes;
 exports.SearchFoods = SearchFoods;
 exports.SearchAll = SearchAll;
 exports.SearchUR = SearchUR;
-exports.SearchUR = SearchUR;
 exports.SearchUF = SearchUF;
 exports.SearchRF = SearchRF;
+
+// ===============================================================================================================================================
+function SearchAllv2(msg, req, res, maxPP, pNb)
+{
+    SearchUsers(msg, req, res, function(users_found) {
+        SearchRecipes(msg, req, res, function(recipes_found) {
+            SearchFoods(msg, req, res, function(foods_found) {
+                if (maxPP == 0)
+                    res.status(200).send({request: "success", users: users_found, recipes: recipes_found, foods: foods_found});
+                else
+                {
+                    if (pNb == 0)
+                        pNb = 1;
+                    var usersIndex = Math.floor(users_found.length / maxPP) + ((users_found.length % maxPP != 0)? 1 : 0);
+                    var resUser;
+                    if (usersIndex == 0)
+                        resUser = { max: maxPP, page_number: pNb, total_pages: usersIndex, total_results: users_found.length, user: users_found};
+                    else if (pNb <= usersIndex)
+                        resUser = { max: maxPP, page_number: pNb, total_pages: usersIndex, total_results: users_found.length, user: users_found.slice((maxPP)* (pNb -1), (maxPP)* pNb)};
+                    else
+                        resUser = { max: maxPP, page_number: pNb, total_pages: usersIndex, total_results: users_found.length, user: "out of range"};
+                    //console.log(resUser);
+                    var recipesIndex = Math.floor(recipes_found.length / maxPP) + ((recipes_found.length % maxPP != 0)? 1 : 0);
+                    var resRecipes;
+                    if (recipesIndex == 0)
+                        resRecipes = { max: maxPP, page_number: pNb, total_pages: recipesIndex, total_results: recipes_found.length, recipe: recipes_found};
+                    else if (pNb <= recipesIndex)
+                        resRecipes = { max: maxPP, page_number: pNb, total_pages: recipesIndex, total_results: recipes_found.length, recipe: recipes_found.slice((maxPP)* (pNb -1), (maxPP)* pNb)};
+                    else
+                        resRecipes = { max: maxPP, page_number: pNb, total_pages: recipesIndex, total_results: recipes_found.length, recipe: "out of range"};
+                    //console.log(resRecipes);
+                    var foodsIndex = Math.floor(foods_found.length / maxPP) + ((foods_found.length % maxPP != 0)? 1 : 0);
+                    var resFood;
+                    if (foodsIndex == 0)
+                        resFood = { max: maxPP, page_number: pNb, total_pages: foodsIndex, total_results: foods_found.length, food: foods_found};
+                    else if (pNb <= foodsIndex)
+                        resFood = { max: maxPP, page_number: pNb, total_pages: foodsIndex, total_results: foods_found.length, food: foods_found.slice((maxPP)* (pNb -1), (maxPP)* pNb)};
+                    else
+                        resFood = { max: maxPP, page_number: pNb, total_pages: foodsIndex, total_results: foods_found.length, food: "out of range"};
+                    //console.log(resFood);
+                    //console.log(usersIndex + " - " + recipesIndex + " - " + foodsIndex);
+                    res.status(200).send({request: "success", users: resUser, recipes: resRecipes, foods: resFood});
+                }
+            });
+        });
+    });
+}
+
+function SearchURv2(msg, req, res, maxPP, pNb)
+{
+    SearchUsers(msg, req, res, function(users_found) {
+        SearchRecipes(msg, req, res, function (recipes_found) {
+            if (maxPP == 0)
+                res.status(200).send({request: "success", users: users_found, recipes: recipes_found});
+            else
+            {
+                if (pNb == 0)
+                    pNb = 1;
+                var usersIndex = Math.floor(users_found.length / maxPP) + ((users_found.length % maxPP != 0)? 1 : 0);
+                var resUser;
+                if (usersIndex == 0)
+                    resUser = { max: maxPP, page_number: pNb, total_pages: usersIndex, total_results: users_found.length, user: users_found};
+                else if (pNb <= usersIndex)
+                    resUser = { max: maxPP, page_number: pNb, total_pages: usersIndex, total_results: users_found.length, user: users_found.slice((maxPP)* (pNb -1), (maxPP)* pNb)};
+                else
+                    resUser = { max: maxPP, page_number: pNb, total_pages: usersIndex, total_results: users_found.length, user: "out of range"};
+                var recipesIndex = Math.floor(recipes_found.length / maxPP) + ((recipes_found.length % maxPP != 0)? 1 : 0);
+                var resRecipes;
+                if (recipesIndex == 0)
+                    resRecipes = { max: maxPP, page_number: pNb, total_pages: recipesIndex, total_results: recipes_found.length, recipe: recipes_found};
+                else if (pNb <= recipesIndex)
+                    resRecipes = { max: maxPP, page_number: pNb, total_pages: recipesIndex, total_results: recipes_found.length, recipe: recipes_found.slice((maxPP)* (pNb -1), (maxPP)* pNb)};
+                else
+                    resRecipes = { max: maxPP, page_number: pNb, total_pages: recipesIndex, total_results: recipes_found.length, recipe: "out of range"};
+                res.status(200).send({request: "success", users: resUser, recipes: resRecipes});
+            }
+        });
+    });
+}
+
+function SearchUFv2(msg, req, res, maxPP, pNb)
+{
+    SearchUsers(msg, req, res, function(users_found) {
+        SearchFoods(msg, req, res, function(foods_found) {
+            if (maxPP == 0)
+                res.status(200).send({request: "success", users: users_found, foods: foods_found});
+            else
+            {
+                if (pNb == 0)
+                    pNb = 1;
+                var usersIndex = Math.floor(users_found.length / maxPP) + ((users_found.length % maxPP != 0)? 1 : 0);
+                var resUser;
+                if (usersIndex == 0)
+                    resUser = { max: maxPP, page_number: pNb, total_pages: usersIndex, total_results: users_found.length, user: users_found};
+                else if (pNb <= usersIndex)
+                    resUser = { max: maxPP, page_number: pNb, total_pages: usersIndex, total_results: users_found.length, user: users_found.slice((maxPP)* (pNb -1), (maxPP)* pNb)};
+                else
+                    resUser = { max: maxPP, page_number: pNb, total_pages: usersIndex, total_results: users_found.length, user: "out of range"};
+                var foodsIndex = Math.floor(foods_found.length / maxPP) + ((foods_found.length % maxPP != 0)? 1 : 0);
+                var resFood;
+                if (foodsIndex == 0)
+                    resFood = { max: maxPP, page_number: pNb, total_pages: foodsIndex, total_results: foods_found.length, food: foods_found};
+                else if (pNb <= foodsIndex)
+                    resFood = { max: maxPP, page_number: pNb, total_pages: foodsIndex, total_results: foods_found.length, food: foods_found.slice((maxPP)* (pNb -1), (maxPP)* pNb)};
+                else
+                    resFood = { max: maxPP, page_number: pNb, total_pages: foodsIndex, total_results: foods_found.length, food: "out of range"};
+                res.status(200).send({request: "success", users: resUser, foods: resFood});
+            }
+        });
+    });
+}
+
+function SearchRFv2(msg, req, res, maxPP, pNb)
+{
+    SearchRecipes(msg, req, res, function(recipes_found) {
+        SearchFoods(msg, req, res, function(foods_found) {
+            if (maxPP == 0)
+                res.status(200).send({request: "success", recipes: recipes_found, foods: foods_found});
+            else
+            {
+                var recipesIndex = Math.floor(recipes_found.length / maxPP) + ((recipes_found.length % maxPP != 0)? 1 : 0);
+                var resRecipes;
+                if (recipesIndex == 0)
+                    resRecipes = { max: maxPP, page_number: pNb, total_pages: recipesIndex, total_results: recipes_found.length, recipe: recipes_found};
+                else if (pNb <= recipesIndex)
+                    resRecipes = { max: maxPP, page_number: pNb, total_pages: recipesIndex, total_results: recipes_found.length, recipe: recipes_found.slice((maxPP)* (pNb -1), (maxPP)* pNb)};
+                else
+                    resRecipes = { max: maxPP, page_number: pNb, total_pages: recipesIndex, total_results: recipes_found.length, recipe: "out of range"};
+                var foodsIndex = Math.floor(foods_found.length / maxPP) + ((foods_found.length % maxPP != 0)? 1 : 0);
+                var resFood;
+                if (foodsIndex == 0)
+                    resFood = { max: maxPP, page_number: pNb, total_pages: foodsIndex, total_results: foods_found.length, food: foods_found};
+                else if (pNb <= foodsIndex)
+                    resFood = { max: maxPP, page_number: pNb, total_pages: foodsIndex, total_results: foods_found.length, food: foods_found.slice((maxPP)* (pNb -1), (maxPP)* pNb)};
+                else
+                    resFood = { max: maxPP, page_number: pNb, total_pages: foodsIndex, total_results: foods_found.length, food: "out of range"};
+
+                res.status(200).send({request: "success", recipes: resRecipes, foods: resFood});
+            }
+        });
+    });
+}
+// ===============================================================================================================================================
+exports.SearchAllv2 = SearchAllv2;
+exports.SearchURv2 = SearchURv2;
+exports.SearchUFv2 = SearchUFv2;
+exports.SearchRFv2 = SearchRFv2;
