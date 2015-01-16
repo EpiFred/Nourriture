@@ -33,6 +33,7 @@ var codes = {
     recipe: {
         missingField: 301,
         invalidField: 302,
+        notFound: 303,
         getNotFound: 303,
         createNoFood: 304,
         foodDoesNotExist: 305,
@@ -40,7 +41,8 @@ var codes = {
         foodsNameDoesNotMatch: 307,
         editNotFound: 308,
         removeNotFound: 309,
-        editNothing: 310
+        editNothing: 310,
+        commentNotFound: 311
     },
     food: {
         missingField: 401,
