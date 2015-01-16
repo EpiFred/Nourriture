@@ -140,7 +140,7 @@ router.post('/', function(req, res) {
         if ((checkError = UserControl.CheckName(ln, "lastname")).code != 0)
             return (res.status(400).send(checkError));
         checkError = UserControl.CheckPicture(avatar);
-        if (!(checkError.code == 0 || checkError.code == errorCodes.user.missingField))
+        if ((checkError.code == 0 || checkError.code == errorCodes.user.missingField))
             return (res.status(400).send(checkError));
 
         var db = req.db;

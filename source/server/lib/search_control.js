@@ -73,7 +73,7 @@ function SearchUsers(msg, req, res, next)
        {
            var user_find = {};
            if (msg != undefined && msg != "") {
-               msg = { $regex: new RegExp(msg, "i")};
+               msg = make_pattern(msg); //msg = { $regex: new RegExp(msg, "i")};
                user_find = {$or: [{pseudo: msg}, {firstname: msg}, {lastname: msg}]};
            }
            user_collection.find(user_find, function(err_find, found_list)
@@ -129,9 +129,8 @@ function SearchFoods(msg, req, res, next)
             return (res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"}));
         else
         {
-            console.log(msg);
             if (msg != undefined && msg != "")
-                msg = { $regex: new RegExp(msg, "i")};
+                msg = make_pattern(msg); //msg = { $regex: new RegExp(msg, "i")};
             else
                 msg = new RegExp();
             foods_collection.find({name : msg}, function(err_find, found_list)
