@@ -39,13 +39,13 @@ router.get('/:id', function (req, res) {
         var idRecip = req.params.id;
 
         if (!(CheckBson.test(idRecip)))
-            res.status(404).send({request: "error", code: errorCodes.recipes.getNotFound, info: "Recipe could not be found."});
+            res.status(404).send({request: "error", code: errorCodes.recipe.getNotFound, info: "Recipe could not be found."});
         var db = req.db;
         db.collection('recipes').findById(idRecip, function (err_collection, recipes_res) {
             if (err_collection)
                 res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
             else if (recipes_res == null)
-                res.status(404).send({request: "error", code: errorCodes.recipes.getNotFound, info: "Recipe could not be found."});
+                res.status(404).send({request: "error", code: errorCodes.recipe.getNotFound, info: "Recipe could not be found."});
             else
                 res.status(201).send({request: "success", recipe: recipes_res});
         });
@@ -70,14 +70,6 @@ router.post('/', function (req, res) {
             var ct = formInfos.cooking_time;
             var instruction = formInfos.instruction;
             var foods = formInfos.foods;
-            if (foods != undefined)
-                if (/^[\],:{}\s]*$/.test(foods.replace(/\\["\\\/bfnrtu]/g, '@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').replace(/(?:^|:|,)(?:\s*\[)+/g, '')))
-                    foods = JSON.parse(formInfos.foods);
-                else
-                    return (res.status(400).send({request: "error", code: errorCodes.recipes.invalidField, message: "The field 'foods' is invalid. Not the format of a JSON"}));
-            else
-                return ({request: "error", code: errorCodes.recipes.missingField, message: "The field 'foods' is mandatory and has not been specified."});
-
 
             if ((checkError = RecipeControl.CheckFieldCreate(name, "name")).code != 0)
                 return (res.status(400).send(checkError));
@@ -91,6 +83,24 @@ router.post('/', function (req, res) {
                 return (res.status(400).send(checkError));
             if ((checkError = RecipeControl.CheckPicture(picture)).code != 0)
                 return (res.status(400).send(checkError));
+
+
+            if (foods != undefined)
+            {
+                try {
+                    if (/^[\],:{}\s]*$/.test(foods.replace(/\\["\\\/bfnrtu]/g, '@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').replace(/(?:^|:|,)(?:\s*\[)+/g, '')))
+                        foods = JSON.parse(formInfos.foods);
+                    else
+                        return (res.status(400).send({request: "error", code: errorCodes.recipe.invalidField, message: "The field 'foods' is invalid. Not the format of a JSON"}));
+                } catch (e){
+                    return (res.status(400).send({request: "error", code: errorCodes.recipe.invalidField, message: "The field 'foods' is invalid. Not the format of a JSON"}));
+                }
+            }
+            else
+                return (res.status(400).send({request: "error", code: errorCodes.recipe.missingField, message: "The field 'foods' is mandatory and has not been specified."}));
+
+            if (typeof(foods) != "object")
+                return (res.status(400).send({request: "error", code: errorCodes.recipe.invalidField, message: "The field 'foods' is invalid. Not the format of a JSON"}));
 
             RecipeControl.CheckIngredientsList(foods, req, res, function()
             {
@@ -152,7 +162,7 @@ router.put('/:id', function (req, res) {
         var form = new formidable.IncomingForm();
         form.parse(req, function (error, formInfos, files) {
             if (Object.keys(formInfos).length == 0 && Object.keys(files).length == 0)
-                return (res.status(400).send({request: "error", code: errorCodes.recipes.editNothing, message: "Nothing to update."}));
+                return (res.status(400).send({request: "error", code: errorCodes.recipe.editNothing, message: "Nothing to update."}));
             var checkError;
             var name = formInfos.name;
             var description = formInfos.description;
@@ -165,17 +175,17 @@ router.put('/:id', function (req, res) {
                 if (/^[\],:{}\s]*$/.test(foods.replace(/\\["\\\/bfnrtu]/g, '@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').replace(/(?:^|:|,)(?:\s*\[)+/g, '')))
                     foods = JSON.parse(formInfos.foods);
                 else
-                    return (res.status(400).send({request: "error", code: errorCodes.recipes.invalidField, message: "The field 'foods' is invalid. Not the format of a JSON"}));
+                    return (res.status(400).send({request: "error", code: errorCodes.recipe.invalidField, message: "The field 'foods' is invalid. Not the format of a JSON"}));
 
-            if ((checkError = RecipeControl.CheckFieldCreate(name, "name")).code == errorCodes.recipes.invalidField)
+            if ((checkError = RecipeControl.CheckFieldCreate(name, "name")).code == errorCodes.recipe.invalidField)
                 return (res.status(400).send(checkError));
-            if ((checkError = RecipeControl.CheckFieldCreate(description, "description")).code == errorCodes.recipes.invalidField)
+            if ((checkError = RecipeControl.CheckFieldCreate(description, "description")).code == errorCodes.recipe.invalidField)
                 return (res.status(400).send(checkError));
-            if ((checkError = RecipeControl.CheckFieldCreate(mt, "make_time")).code == errorCodes.recipes.invalidField)
+            if ((checkError = RecipeControl.CheckFieldCreate(mt, "make_time")).code == errorCodes.recipe.invalidField)
                 return (res.status(400).send(checkError));
-            if ((checkError = RecipeControl.CheckFieldCreate(ct, "cooking_time")).code == errorCodes.recipes.invalidField)
+            if ((checkError = RecipeControl.CheckFieldCreate(ct, "cooking_time")).code == errorCodes.recipe.invalidField)
                 return (res.status(400).send(checkError));
-            if ((checkError = RecipeControl.CheckFieldCreate(instruction, "instruction")).code == errorCodes.recipes.invalidField)
+            if ((checkError = RecipeControl.CheckFieldCreate(instruction, "instruction")).code == errorCodes.recipe.invalidField)
                 return (res.status(400).send(checkError));
             checkError = RecipeControl.CheckPicture(picture);
             if (!(checkError.code == 0 || checkError.code == undefined))
@@ -186,7 +196,7 @@ router.put('/:id', function (req, res) {
                 var db = req.db;
                 var idRecipe = req.params.id;
                 if (!CheckBson.test(idRecipe))
-                    return (res.status(404).send({request: "error", code: errorCodes.recipes.editNotFound, message: "Recipe could not be found."}));
+                    return (res.status(404).send({request: "error", code: errorCodes.recipe.editNotFound, message: "Recipe could not be found."}));
                 db.collection("recipes", function(err_collection, recipes_collection){
                    if (err_collection)
                        return (res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"}));
@@ -194,7 +204,7 @@ router.put('/:id', function (req, res) {
                       if (err_find)
                           return (res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"}));
                       else if (recipe_found == null)
-                          return (res.status(404).send({request: "error", code: errorCodes.recipes.editNotFound, message: "Recipe could not be found."}));
+                          return (res.status(404).send({request: "error", code: errorCodes.recipe.editNotFound, message: "Recipe could not be found."}));
                       else
                       {
                           var update_recipe = {};
@@ -263,7 +273,7 @@ router.delete('/:id', function (req, res) {
                     if (err_find)
                         res.status(errorCodes.api.statusDB).send({request:"error", code: errorCodes.undetermined.codeDB, info: "DB Error"});
                     if (recipe_found === null)
-                        res.status(404).send({ request: "error", code: errorCodes.recipes.removeNotFound, info: "Recipe could not be found." });
+                        res.status(404).send({ request: "error", code: errorCodes.recipe.removeNotFound, info: "Recipe could not be found." });
                     else
                     {
                         recipes_collection.remove({ _id : recipe_found._id}, function(err_del, res_del){
