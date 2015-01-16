@@ -100,7 +100,7 @@ router.post('/v2', function (req, res) {
             else
                 maxPerPage = Math.abs(maxPerPage);
             if (!(pageNumber != undefined && pageNumber != 0 && isNaN(pageNumber) == false))
-                pageNumber = 0;
+                pageNumber = 1;
             else
                 pageNumber = Math.abs(pageNumber);
 
@@ -144,15 +144,24 @@ router.post('/v2', function (req, res) {
                 SearchControl.SearchRFv2(searching, req, res, maxPerPage, pageNumber);
             else if (u_want.users == 1 && u_want.foods == 0 && u_want.recipes == 0)
                 SearchControl.SearchUsers(searching, req, res, function(users_list) {
-                    res.status(200).send({request: "success", users: users_list});
+                    if (maxPerPage == 0)
+                        res.status(200).send({request: "success", users: users_list});
+                    else
+                        res.status(200).send({request: "success", users: SearchControl.getUserListV2(users_list, maxPerPage, pageNumber)});
                 });
             else if (u_want.users == 0 && u_want.foods == 1 && u_want.recipes == 0)
                 SearchControl.SearchFoods(searching, req, res, function(foods_list) {
-                    res.status(200).send({request: "success", foods: foods_list});
+                    if (maxPerPage == 0)
+                        res.status(200).send({request: "success", foods: foods_list});
+                    else
+                        res.status(200).send({request: "success", foods: SearchControl.getFoodListV2(foods_list, maxPerPage, pageNumber)});
                 });
             else if (u_want.users == 0 && u_want.foods == 0 && u_want.recipes == 1)
                 SearchControl.SearchRecipes(searching, req, res, function(recipes_list) {
-                    res.status(200).send({request: "success", recipes: recipes_list});
+                    if (maxPerPage == 0)
+                        res.status(200).send({request: "success", users: recipes_list});
+                    else
+                        res.status(200).send({request: "success", recipes: SearchControl.getRecipeListV2(recipes_list, maxPerPage, pageNumber)});
                 });
             else
                 res.status(500).send({request:"error"});
