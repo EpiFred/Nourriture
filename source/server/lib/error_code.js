@@ -13,6 +13,7 @@ var codes = {
         expiredToken: 101,
         noSuchFile: 102,
         notAnImage: 103,
+        invalidToken: 104,
         statusDB: 500
     },
     user: {

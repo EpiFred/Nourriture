@@ -405,8 +405,8 @@ router.post('/favorite', function(req, res){
                                     res.status(500).json({"request": "error"});
                                 }
                                 else if (users.length == 0)
-                                    res.status(500).json({"request": "error"});
-                                else if (users[0].favorites.indexOf(recipeId) > -1)
+                                    res.status(400).json({"request": "error", "code": errorCodes.user.invalidToken, "message": "No user is authenticated with the token provided."});
+                                else if (typeof users[0].favorites !== "undefined" && users[0].favorites.indexOf(recipeId) > -1)
                                     res.status(400).json({"request": "error", "code": errorCodes.user.recipeAlreadyInFavorites, "message": "Recipe is already in favorites."});
                                 else {
 
