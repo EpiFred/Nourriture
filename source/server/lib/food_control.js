@@ -2,28 +2,28 @@
  * Created by Julian on 09/01/2015.
  */
 
-var CodeError = require('./error_code.js');
+var errorCodes = require('./error_code.js');
 // ===============================================================================================================================================
 var base_url = "./";
-var image_dir_url = base_url + "public/images/foods";
+var image_dir_url = base_url + "public/images/foods/";
 // ===============================================================================================================================================
 function CheckFieldCreate(field, type)
 {
     if (field === undefined)
-        return ({request: "error", code: CodeError.CodeFoodFieldMissing, message: "The field '" + type + "' is mandatory and has not been specified."});
+        return ({request: "error", code: errorCodes.food.missingField, message: "The field '" + type + "' is mandatory and has not been specified."});
     if (field == "")
-        return ({request: "error", code: CodeError.CodeFoodFieldInvalid, message: "The field '" + type + "' is invalid"});
+        return ({request: "error", code: errorCodes.food.invalidField, message: "The field '" + type + "' is invalid"});
     return ({code: 0, message:  type + " is OK"});
 }
 
 function CheckPicture(picture)
 {
     if (picture === undefined)
-        return ({request: "error", code: CodeError.CodeFoodFieldMissing, message: "The field 'picture' is mandatory and has not been specified."});
+        return ({request: "error", code: errorCodes.food.missingField, message: "The field 'picture' is mandatory and has not been specified."});
     if (picture.path == "")
-        return ({request: "error", code: CodeError.CodeNoSuchFile, message: "No such file '"+ picture.path +"'."});
+        return ({request: "error", code: errorCodes.api.noSuchFile, message: "No such file '"+ picture.path +"'."});
     if (picture.type.indexOf("image") != 0)
-        return ({request: "error", code: CodeError.CodeNotAnImage, message: "The file uploaded must be an image."});
+        return ({request: "error", code: errorCodes.api.notAnImage, message: "The file uploaded must be an image."});
     return ({code: 0, message: "Everything is OK"});
 }
 

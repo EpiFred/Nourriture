@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Nourriture - Recipe</title>
+		<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="http://localhost/Nourriture/css/style.css">
+	</head>
+	<body>
+		<nav class="navbar navbar-default" role="navigation">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="sr-only">Toggle navigation</span>
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="./#" id="header-title">Nourriture</a>
+				</div>
+				<div class="collapse navbar-collapse" id="menu">
+					<ul class="nav navbar-nav">
+						<li><a href="./#">Home</a></li>
+						<li class="active"><a href="#/search.html">Search</a></li>
+						<li><a href="#">Account</a></li>
+					</ul>
+					<ul class="nav navbar-nav pull-right">
+						<li><a href="#">Log Out</a></li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<div class="align-nav greenline"></div>
+
+		<div class="row stardust-pattern">
+			<div class="container">
+				<img src="assets/burger.jpg" class="col-xs-5 col-sm-4 col-md-3">
+				<div class="col-xs-7 col-sm-8 col-md-9" id="recipe-name">
+					<h1>{{recipe.name}}</h1>
+					<h5>{{recipe.description}}</h5>
+				</div>
+			</div>
+		</div>
+		<div class="container" id="recipe-content">
+			<div class="col-xs-12 col-sm-8 col-md-9" ng-repeat="product in products">
+				<h3>Preparation de la recette</h3>
+				<p>{{recipe.instruction}}</p>
+			</div>
+			<div class="col-xs-12 col-sm-4 col-md-3" id="recipe-summary">
+				<h4>Making Time : {{recipe.make_time}}</h4>
+				<h4>Cooking Time : {{recipe.cooking_time}}</h4>
+				<h4>Ingredients</h4>
+				<div ng-repeat="food in foods">
+				<ul>
+					<li>{{food.name}} : {{food.detail}}</li>
+				</ul>
+			</div>
+			</div>
+		</div>
+
+		<div class="row light-pattern" id="comment-list">
+			<div>
+				<div class="container comment">
+					<img src="assets/franky.png" class="col-xs-4 col-sm-3 col-md-2 img-profil">
+					<div class="col-xs-8 col-sm-9 col-md-10">
+						<h3>Name</h3>
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean mollis bibendum vehicula. Quisque non semper metus.</p>
+					</div>
+				</div>
+				<div class="container greenline"></div>
+			</div>
+			<div>
+				<div class="container comment">
+					<img src="assets/franky.png" class="col-xs-4 col-sm-3 col-md-2 img-profil">
+					<div class="col-xs-8 col-sm-9 col-md-10">
+						<h3>Name</h3>
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean mollis bibendum vehicula. Quisque non semper metus.</p>
+					</div>
+				</div>
+				<div class="container greenline"></div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="container">
+				<div class="col-md-offset-3 col-md-offset-6 col-lg-offset-3 col-lg-6 form">
+					<legend>Comment</legend>
+					<form>
+						<input type="text" placeholder="Username">
+						<textarea></textarea>
+						<button>Submit</button>
+					</form>
+				</div>
+			</div>
+		</div>
+
+	</body>
+</html>

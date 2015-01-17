@@ -2,7 +2,7 @@
  * Created by Julian on 07/01/2015.
  */
 
-var CodeError = require('./error_code.js');
+var errorCodes = require('./error_code.js');
 // ===============================================================================================================================================
 var protocol_login = /^[a-zA-Z0-9]+$/;
 //var protocol_mail = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -23,9 +23,9 @@ var image_dir_url = base_url + "public/images/users/";
 function CheckLogin(login)
 {
     if (login === undefined)
-        return ({request: "error", code: CodeError.CodeUserFieldMissing, message: "The field 'pseudo' is mandatory and has not been specified."});
+        return ({request: "error", code: errorCodes.user.missingField, message: "The field 'pseudo' is mandatory and has not been specified."});
     if (login == "")
-        return ({request: "error", code: CodeError.CodeUserFieldInvalid, message: "The field 'pseudo' is invalid"});
+        return ({request: "error", code: errorCodes.user.invalidField, message: "The field 'pseudo' is invalid"});
     //if (protocol_login.test(login))
     //    return ({code: 1003, message: "Field 'login' not conform to the login protocol"});
     return ({code: 0, message: "Login is OK"});
@@ -41,9 +41,9 @@ function CheckLogin(login)
 function CheckPassword(passwd)
 {
     if (passwd === undefined)
-        return ({request: "error", code: CodeError.CodeUserFieldMissing, message: "The field 'password' is mandatory and has not been specified."});
+        return ({request: "error", code: errorCodes.user.missingField, message: "The field 'password' is mandatory and has not been specified."});
     if (passwd == "")
-        return ({request: "error", code: CodeError.CodeUserFieldInvalid, message: "The field 'password' is invalid"});
+        return ({request: "error", code: errorCodes.user.invalidField, message: "The field 'password' is invalid"});
     //if (!protocol_password.test(passwd))
     //    return ({code: 1013, message: "Field 'password' not conform to the password protocol"});
     return ({code: 0, message: "Password is OK"});
@@ -59,11 +59,11 @@ function CheckPassword(passwd)
 function CheckMail(mail)
 {
     if (mail === undefined)
-        return ({request: "error", code: CodeError.CodeUserFieldMissing, message: "The field 'email' is mandatory and has not been specified."});
+        return ({request: "error", code: errorCodes.user.missingField, message: "The field 'email' is mandatory and has not been specified."});
     if (mail == "")
-        return ({request: "error", code: CodeError.CodeUserFieldInvalid, message: "The field 'email' is invalid"});
+        return ({request: "error", code: errorCodes.user.invalidField, message: "The field 'email' is invalid"});
     if (protocol_mail.test(mail))
-        return ({request: "error", code: CodeError.CodeSyntaxEmail, message: "Syntax of email '" + mail + "' is invalid"});
+        return ({request: "error", code: errorCodes.user.syntaxEmail, message: "Syntax of email '" + mail + "' is invalid"});
     return ({code: 0, message: "Mail is OK"});
 }
 
@@ -77,9 +77,9 @@ function CheckMail(mail)
 function CheckName(name, type)
 {
     if (name === undefined)
-        return ({request: "error", code: CodeError.CodeUserFieldMissing, message: "The field '" + type + "' is mandatory and has not been specified."});
+        return ({request: "error", code: errorCodes.user.missingField, message: "The field '" + type + "' is mandatory and has not been specified."});
     if (name == "")
-        return ({request: "error", code: CodeError.CodeUserFieldInvalid, message: "The field '" + type + "' is invalid"});
+        return ({request: "error", code: errorCodes.user.invalidField, message: "The field '" + type + "' is invalid"});
     return ({code: 0, message:  type + " is OK"});
 }
 
@@ -87,11 +87,11 @@ function CheckName(name, type)
 function CheckPicture(picture)
 {
     if (picture === undefined)
-        return ({request: "error", code: CodeError.CodeFoodFieldMissing, message: "The field 'avatar' is mandatory and has not been specified."});
+        return ({request: "error", code: errorCodes.food.missingField, message: "The field 'avatar' is mandatory and has not been specified."});
     if (picture.path == "")
-        return ({request: "error", code: CodeError.CodeNoSuchFile, message: "No such file '"+ picture.path +"'."});
+        return ({request: "error", code: errorCodes.api.noSuchFile, message: "No such file '"+ picture.path +"'."});
     if (picture.type.indexOf("image") != 0)
-        return ({request: "error", code: CodeError.CodeNotAnImage, message: "The file uploaded must be an image."});
+        return ({request: "error", code: errorCodes.api.notAnImage, message: "The file uploaded must be an image."});
     return ({code: 0, message: "Everything is OK"});
 }
 
