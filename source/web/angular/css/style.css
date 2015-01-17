@@ -1,0 +1,230 @@
+@media (min-width: 549px) {
+	.container {
+		width: 530px;
+	}
+}
+@media (min-width: 768px) {
+	.container {
+		width: 750px;
+	}
+}
+@media (min-width: 992px) {
+	.container {
+		width: 970px;
+	}
+}
+@media (min-width: 1200px) {
+	.container {
+		width: 1170px;
+	}
+}
+
+.col-lg-offset-6 {
+	margin-left: 50%;
+}
+
+body {
+	background-color: #FDFDFD;
+}
+
+#menu a {
+	color: #56D04C;
+}
+
+ul {
+	color: #A8F25E;
+}
+
+legend {
+	color: #56D04C;
+	font-size: 25px;
+}
+
+#header-title {
+	font-size: 25px;
+	color: #56D04C;
+}
+
+.align-nav {
+	margin-top: -21px;
+}
+
+.title {
+	text-align: center;
+	color: #FFFFFF;
+	text-shadow;:0 1px 1px rgba(0, 0, 0, 0.4);
+	margin-bottom: 32px;
+	margin-top: -30%;
+}
+
+.light-pattern {
+	background-image: url(../assets/mini_waves.png);
+	background-repeat: repeat;
+}
+
+.dark-pattern {
+	background-image: url(../assets/lodyas.png);
+	background-repeat: repeat;
+}
+
+.stardust-pattern {
+	background-image: url(../assets/stardust.png);
+	background-repeat: repeat;
+	padding: 20px;	
+}
+
+.stardust-pattern h1,h3,h5 {
+	color: white;
+}
+
+
+.greenline {
+	height: 2px;
+	background-color: #56D04C
+}
+
+.form {
+	padding-top: 20px;
+}
+
+.form input {
+	background-color: #F1F1F1;
+	border: 1px solid #56D04C;
+	color: #56D04C;
+	font-size: 17px;
+	padding: 16px;
+	border-radius: 5px;
+	margin-bottom: 15px;
+	width: 100%;
+}
+
+.form button {
+	border: 1px solid #56D04C;
+	background-color: #A8F25E;
+	color: #FFFFFF;
+	font-size: 20px;
+	border-radius: 5px;
+	display: inline-block;
+	padding: 5px 10px;
+	margin-bottom: 35px;
+	float: right;
+}
+
+.form textarea {
+	border-radius: 6px;
+	width: 100%;
+	font-size: 13px;
+	padding: 10px;
+}
+
+.search-bar {
+
+}
+
+.search-bar input {
+	background-color: #F1F1F1;
+	border: 1px solid #56D04C;
+	color: #56D04C;
+	font-size: 17px;
+	padding:20px;
+	border-radius: 5px;
+	margin-top: 15px;
+	margin-bottom: 15px;
+}
+
+.search-bar button {
+	background-color: #F1F1F1;
+	border: 1px solid #56D04C;
+	color: #56D04C;
+	padding:10px;
+	border-radius: 5px;
+	margin-top: 14px;
+	margin-bottom: 15px;
+}
+
+.sign {
+	font-size: 15px;
+	border-radius: 4px;
+	padding: 4px 13px;
+	display: inline-block;
+}
+.sign.user {
+	background-color: #9DDBFF;
+	color: #2980b9;
+	border: 1px solid #2980b9;
+}
+.sign.user:before {
+	content: 'User';
+}
+.sign.recipe {
+	background-color: #D6BBE1;
+	color: #813E9D;
+	border: 1px solid #813E9D;
+}
+.sign.recipe:before {
+	content: 'Recipe';
+}
+.sign.food {
+	background-color: #FFB18C;
+	color: #d35400;
+	border: 1px solid #d35400;
+}
+.sign.food:before {
+	content: 'Food';
+}
+
+.search-results .result {
+	border: 1px solid #969696;
+	border-radius: 4px;
+	margin-top: 10px;
+	display: block;
+	padding: 4px;
+	background-color: #FAFAFA;
+}
+
+.search-results .img-responsive {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.search-results .result-name{
+	padding: 9px;
+}
+.search-results .result-name h3 {
+	color: #56D04C;
+}
+#recipe-content {
+	padding: 20px;
+}
+#recipe-content h3{
+	color: #333333;
+}
+
+#recipe-content #recipe-summary {
+	border: 1px solid #56D04C;
+	border-radius: 5px;
+}
+
+.img-profil {
+	border: 1px solid lightgray;
+	border-radius: 10px;
+}
+
+.comment {
+	padding: 15px;
+}
+
+.comment h3 {
+	color: #333333;
+}
+
+#favorites {
+	margin-top: 15px;
+}
+
+.nutritional_values {
+	margin-top: 20px 
+}
+.values {
+	font-size: 20px;
+}

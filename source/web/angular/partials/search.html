@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Nourriture - Search</title>
+		<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="http://localhost/Nourriture/css/style.css">
+	</head>
+	<body>
+		<nav class="navbar navbar-default" role="navigation">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="sr-only">Toggle navigation</span>
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="./#" id="header-title">Nourriture</a>
+				</div>
+				<div class="collapse navbar-collapse" id="menu">
+					<ul class="nav navbar-nav">
+						<li><a href="./#">Home</a></li>
+						<li class="active"><a href="#">Search</a></li>
+						<li><a href="#">Account</a></li>
+					</ul>
+					<ul class="nav navbar-nav pull-right">
+						<li><a href="#">Log Out</a></li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<div class="align-nav greenline"></div>
+		<div class="container">
+		    <div class="input-group search-bar">
+				<input type="text" class="form-control" placeholder="Search" ng-model="query">
+				<span class="input-group-btn">
+					<button class="btn btn-default glyphicon glyphicon-search" type="button"></button>
+				</span>
+			</div>
+		</div>
+		<div class="container filter">
+			<div class="col-xs-4">
+				<input type="checkbox" name="user" value="1">
+				<span class="user">User</span>
+			</div>
+			<div class="col-xs-4">
+				<input type="checkbox" name="food" value="2">
+				<span class="food">Food</span>
+			</div>
+			<div class="col-xs-4">
+				<input type="checkbox" name="recipe" value="3">
+				<span class="recipe">Recipe</span>
+			</div>
+		</div>
+		<div class="container search-results">
+			<div class="col-sm-6 col-md-4" ng-repeat="recipe in recipes | filter : query">
+				<div class="result">
+					<img src="assets/burger.jpg" class="img-responsive">
+					<div class="result-name">
+						<a href="#/recipes/{{recipe._id}}"><h3>{{recipe.name}}</h3></a>
+						<div class="sign recipe"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="container search-results">
+			<div class="col-sm-6 col-md-4" ng-repeat="user in users | filter : query">
+				<div class="result">
+					<img src="assets/burger.jpg" class="img-responsive">
+					<div class="result-name">
+						<a href="#/users/{{user._id}}"><h3>{{user.pseudo}}</h3></a>
+						<div class="sign user"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="container search-results">
+			<div class="col-sm-6 col-md-4" ng-repeat="food in foods | filter : query">
+				<div class="result">
+					<img src="assets/burger.jpg" class="img-responsive">
+					<div class="result-name">
+						<a href="#/foods/{{food._id}}"><h3>{{food.name}}</h3></a>
+						<div class="sign food"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

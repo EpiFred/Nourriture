@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Nourriture - Account</title>
+	<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+	<nav class="navbar navbar-default" role="navigation">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#" id="header-title">Nourriture</a>
+			</div>
+			<div class="collapse navbar-collapse" id="menu">
+				<ul class="nav navbar-nav">
+					<li><a href="#">Home</a></li>
+					<li><a href="#">Search</a></li>
+					<li class="active"><a href="#">Account</a></li>
+				</ul>
+				<ul class="nav navbar-nav pull-right">
+					<li><a href="#">Log Out</a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<div class="align-nav greenline"></div>
+
+	<div class="row stardust-pattern">
+		<div class="container">
+			<img src="assets/Franky.png" class="col-xs-5 col-sm-4 col-md-3">
+			<div class="col-xs-7 col-sm-8 col-md-9" id="recipe-name">
+				<h1>{{user.pseudo}}</h1>
+				<h3>{{user.lastname}}</h3>
+				<h3>{{user.firstname}}</h3>
+				<h3>Email: {{user.email}}</h3>
+			</div>
+		</div>
+	</div>
+	<div class="container search-results" id="favorites">
+		<legend>My Favorites</legend>
+		<div class="col-sm-6 col-md-4">
+			<div class="result">
+				<img src="assets/burger.jpg" class="img-responsive">
+				<div class="result-name">
+					<a href="#/recipes/{{user.favorites.0}}"><h3>Recipe Name</h3></a>
+					<div class="sign recipe"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+<!-- 		<div class="container" id="recipe-content">
+			<div class="col-xs-12 col-sm-8 col-md-9">
+				<h3>Preparation de la recette</h3>
+				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean mollis bibendum vehicula. Quisque non semper metus.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean mollis bibendum vehicula. Quisque non semper metus.</p>
+			</div>
+			<div class="col-xs-12 col-sm-4 col-md-3" id="recipe-summary">
+				<h4>Making Time : 15min</h4>
+				<h4>Cooking Time : 15min</h4>
+				<h4>Ingredients</h4>
+				<p>
+	                <span>Ingrédients (pour 5 personnes) :</span><br>
+	                - 800 g de patates douces<br>- 1 briquette de crème fraîche (20 cl) <br>- huile d'olive<br>- sel, poivre ou piment de cayenne<br>- facultatif : zestes d'orange ou de citron pour parfumer<br>
+	                <br>
+	            </p>
+			</div>
+		</div>
+
+		<div class="row light-pattern" id="comment-list">
+			<div>
+				<div class="container comment">
+					<img src="assets/franky.png" class="col-xs-4 col-sm-3 col-md-2 img-profil">
+					<div class="col-xs-8 col-sm-9 col-md-10">
+						<h3>Name</h3>
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean mollis bibendum vehicula. Quisque non semper metus.</p>
+					</div>
+				</div>
+				<div class="container greenline"></div>
+			</div>
+			<div>
+				<div class="container comment">
+					<img src="assets/franky.png" class="col-xs-4 col-sm-3 col-md-2 img-profil">
+					<div class="col-xs-8 col-sm-9 col-md-10">
+						<h3>Name</h3>
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean mollis bibendum vehicula. Quisque non semper metus.</p>
+					</div>
+				</div>
+				<div class="container greenline"></div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="container">
+				<div class="col-md-offset-3 col-md-offset-6 col-lg-offset-3 col-lg-6 form">
+					<legend>Comment</legend>
+					<form>
+						<input type="text" placeholder="Username">
+						<textarea></textarea>
+						<button>Submit</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	-->
+</body>
+</html>
