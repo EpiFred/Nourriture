@@ -11,7 +11,6 @@ ssh ubuntu@localhost <<EOF
  sudo ./node_install.sh
  ./mongodb_launch.sh
  ./nourriture_server_launch.sh
- ./nourriture_front_launch.sh
  exit
  EOF
 
