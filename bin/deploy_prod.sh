@@ -10,7 +10,7 @@ ssh ubuntu@localhost <<EOF
  sudo ./mongodb_install.sh
  sudo ./node_install.sh
  ./mongodb_launch.sh
- ./nourriture_launch.sh
+ ./nourriture_server_launch.sh
  exit
  EOF
 

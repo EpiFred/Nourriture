@@ -1,0 +1,23 @@
+{
+  "name": "Nourriture",
+  "version": "1.0.0",
+  "description": "AngularJS front end-app for Nourriture.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EpiFred/Nourriture.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EpiFred/Nourriture/issues"
+  },
+  "homepage": "https://github.com/EpiFred/Nourriture",
+  "dependencies": {
+    "express": "~4.0.0",
+    "morgan": "~1.0.0"
+  }
+}
