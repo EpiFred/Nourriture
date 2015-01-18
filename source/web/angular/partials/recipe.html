@@ -62,21 +62,11 @@
 
 		<div class="row light-pattern" id="comment-list">
 			<div>
-				<div class="container comment">
+				<div class="container comment" ng-repeat="comment in comments">
 					<img src="assets/franky.png" class="col-xs-4 col-sm-3 col-md-2 img-profil">
 					<div class="col-xs-8 col-sm-9 col-md-10">
-						<h3>Name</h3>
-						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean mollis bibendum vehicula. Quisque non semper metus.</p>
-					</div>
-				</div>
-				<div class="container greenline"></div>
-			</div>
-			<div>
-				<div class="container comment">
-					<img src="assets/franky.png" class="col-xs-4 col-sm-3 col-md-2 img-profil">
-					<div class="col-xs-8 col-sm-9 col-md-10">
-						<h3>Name</h3>
-						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean mollis bibendum vehicula. Quisque non semper metus.</p>
+						<h3>{{comment.user.pseudo}}</h3>
+						<p>{{comment.message}}</p>
 					</div>
 				</div>
 				<div class="container greenline"></div>

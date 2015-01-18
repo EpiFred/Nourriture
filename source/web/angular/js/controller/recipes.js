@@ -6,7 +6,7 @@ app.controller('RecipesCtrl', function ($scope, PostFactory, $routeParams){
 		$scope.loading = false;
 		$scope.recipe = post;
 		$scope.foods = post.foods;
-		console.log($scope.foods);		
+		$scope.comments = post.comments;
 	}, function(msg){
 		alert(msg);
 	})

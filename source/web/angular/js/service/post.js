@@ -1,4 +1,5 @@
 app.factory('PostFactory', function ($http, $q, $timeout){
+	var token = 'eeef7f2ece5107f5c14ca2cd8db32d4a';
 	var factory = {
 		posts : false,
 		getPosts : function(){
@@ -6,14 +7,14 @@ app.factory('PostFactory', function ($http, $q, $timeout){
 			if (factory.posts !== false){
 				deferred.resolve(factory.posts);
 			}else{
-				$http.post('http://54.193.57.157:3000/search?t=760468092aff5a9815ea4271944ca1b3')
+				$http.post('http://54.193.57.157:3000/search?t='+token)
 				.success(function(data, status){
 					factory.posts = data;
 					$timeout(function(){
 						deferred.resolve(data);
 					}, 1000)
 				}).error(function(data, status){
-					deferred.reject('error connection');
+					deferred.reject('Please, athenticate again.');
 				});
 			}
 			return deferred.promise;
